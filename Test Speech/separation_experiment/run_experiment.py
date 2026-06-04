@@ -26,9 +26,18 @@ AUDIO_ZIP    = os.path.join(SCRIPT_DIR, "..", "audio.zip")
 RAW_WAV_DIR  = os.path.join(SCRIPT_DIR, "audio_raw_wav")
 SEP_OUT_DIR  = os.path.join(SCRIPT_DIR, "audio_separated")
 ENH_OUT_DIR  = os.path.join(SCRIPT_DIR, "audio_enhanced")
-RESULTS_JSON = os.path.join(SCRIPT_DIR, "results.json")
-DNSMOS_ONNX  = os.path.join(SCRIPT_DIR, "..", "..", "denoise_experiment", "sig_bak_ovr.onnx")
-MODEL_DIR    = os.path.join(SCRIPT_DIR, "models")
+RESULTS_JSON   = os.path.join(SCRIPT_DIR, "results.json")
+LATENCY_JSON   = os.path.join(SCRIPT_DIR, "latency_results.json")
+TIMINGS_CACHE  = os.path.join(SCRIPT_DIR, "timings_cache.json")
+DNSMOS_ONNX    = os.path.join(SCRIPT_DIR, "sig_bak_ovr.onnx")
+MODEL_DIR      = os.path.join(SCRIPT_DIR, "models")
+
+# RTF trung bình từ lần chạy đầu (CPU) — dùng ước tính khi SKIP separation chưa có cache
+LATENCY_DEFAULT_RTF = {
+    "bs_roformer_1297": 9.335,
+    "melband_roformer_vocal": 5.673,
+}
+DFN3_DEFAULT_RTF = 0.060
 
 # ── Số file lấy mẫu từ mỗi category ──────────────────────────────
 N_SAMPLES_PER_CATEGORY = 3
@@ -43,12 +52,51 @@ SEPARATION_MODELS = {
 }
 
 # ═══════════════════════════════════════════════════════════════════
+# Độ trễ xử lý local (latency)
+# ═══════════════════════════════════════════════════════════════════
+
+def load_timings_cache():
+    if os.path.exists(TIMINGS_CACHE):
+        with open(TIMINGS_CACHE, encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+
+def save_timings_cache(cache):
+    with open(TIMINGS_CACHE, "w", encoding="utf-8") as f:
+        json.dump(cache, f, ensure_ascii=False, indent=2)
+
+
+def make_latency_record(elapsed_s, duration_s=None, estimated=False):
+    """Ghi nhận độ trễ xử lý local (không phải HTTP API)."""
+    rec = {
+        "latency_s": round(elapsed_s, 3),
+        "latency_ms": round(elapsed_s * 1000, 1),
+    }
+    if duration_s and duration_s > 0:
+        rec["duration_s"] = round(duration_s, 2)
+        rec["rtf"] = round(elapsed_s / duration_s, 4)
+    if estimated:
+        rec["estimated"] = True
+    return rec
+
+
+def timed_dnsmos(wav_path):
+    t0 = time.perf_counter()
+    scores = compute_dnsmos(wav_path)
+    elapsed = time.perf_counter() - t0
+    latency = make_latency_record(elapsed)
+    return scores, latency
+
+
+# ═══════════════════════════════════════════════════════════════════
 # BƯỚC 0: Giải nén & convert webm → WAV
 # ═══════════════════════════════════════════════════════════════════
 
 def extract_and_convert(n_per_cat=N_SAMPLES_PER_CATEGORY):
     """Giải nén audio.zip, lấy N file đầu mỗi category, convert sang WAV 44100Hz stereo."""
     os.makedirs(RAW_WAV_DIR, exist_ok=True)
+    convert_latency = {}
 
     print("\n" + "="*60)
     print("BƯỚC 0: Giải nén audio.zip và convert → WAV")
@@ -81,10 +129,12 @@ def extract_and_convert(n_per_cat=N_SAMPLES_PER_CATEGORY):
             if os.path.exists(out_path):
                 print(f"  [SKIP] {out_name} đã có sẵn")
                 wav_files.append(out_path)
+                convert_latency[out_name] = None
                 continue
 
             # Giải nén webm tạm thời
             webm_tmp = os.path.join(RAW_WAV_DIR, f"_tmp_{name_no_ext}.webm")
+            t0 = time.perf_counter()
             with zf.open(entry) as src, open(webm_tmp, "wb") as dst:
                 dst.write(src.read())
 
@@ -100,16 +150,18 @@ def extract_and_convert(n_per_cat=N_SAMPLES_PER_CATEGORY):
             ]
             result = subprocess.run(cmd, capture_output=True, text=True)
             os.remove(webm_tmp)
+            elapsed = time.perf_counter() - t0
 
             if result.returncode == 0:
                 size_kb = os.path.getsize(out_path) / 1024
-                print(f"  ✓ {out_name} ({size_kb:.0f} KB)")
+                convert_latency[out_name] = make_latency_record(elapsed)
+                print(f"  ✓ {out_name} ({size_kb:.0f} KB) | convert={elapsed:.1f}s")
                 wav_files.append(out_path)
             else:
                 print(f"  ✗ FAIL: {out_name}")
                 print(f"    {result.stderr[-300:]}")
 
-    return wav_files
+    return wav_files, convert_latency
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -169,7 +221,24 @@ def snr_estimate(wav_path):
 # BƯỚC 1: Music Source Separation với audio-separator
 # ═══════════════════════════════════════════════════════════════════
 
-def run_separation(wav_files, model_short_name, model_filename):
+def pick_vocal_stem(file_paths):
+    """Chọn đúng stem vocal, tránh nhầm với tên model chứa 'vocals'."""
+    scored = []
+    for path in file_paths:
+        name = os.path.basename(path).lower()
+        if "(vocals)" in name:
+            scored.append((0, path))
+        elif "(vocal)" in name and "(instrumental)" not in name:
+            scored.append((1, path))
+        elif "vocal" in name and "(other)" not in name and "(instrumental)" not in name:
+            scored.append((2, path))
+    if scored:
+        scored.sort(key=lambda x: x[0])
+        return scored[0][1]
+    return file_paths[0] if file_paths else None
+
+
+def run_separation(wav_files, model_short_name, model_filename, timings_cache):
     print(f"\n{'='*60}")
     print(f"BƯỚC 1 - TÁCH VOCAL: {model_short_name}")
     print(f"  Model file: {model_filename}")
@@ -180,6 +249,7 @@ def run_separation(wav_files, model_short_name, model_filename):
     os.makedirs(MODEL_DIR, exist_ok=True)
 
     results = {}
+    model_load_latency = None
     try:
         from audio_separator.separator import Separator
         sep = Separator(
@@ -188,7 +258,10 @@ def run_separation(wav_files, model_short_name, model_filename):
             output_format="WAV",
             normalization_threshold=0.9,
         )
+        t_load = time.perf_counter()
         sep.load_model(model_filename)
+        model_load_latency = make_latency_record(time.perf_counter() - t_load)
+        print(f"  [LOAD] model load: {model_load_latency['latency_s']}s")
 
         for wav_path in wav_files:
             name = os.path.splitext(os.path.basename(wav_path))[0]
@@ -198,32 +271,36 @@ def run_separation(wav_files, model_short_name, model_filename):
             model_stem = os.path.splitext(model_filename)[0]
 
             # Tìm file vocals đã có sẵn (nếu đã chạy trước đó)
-            # Ưu tiên tìm stem có "(Vocals)" hoặc "(vocals)" trước tên model
-            existing_vocal = None
-            candidates = []
-            for f in os.listdir(out_dir):
-                fl = f.lower()
-                if name_sanitized.lower() in fl:
-                    # Chỉ lấy stem vocals, không lấy (other) hay (instrumental)
-                    if "(vocals)" in fl:
-                        candidates.insert(0, os.path.join(out_dir, f))  # ưu tiên cao nhất
-                    elif "(instrumental)" not in fl and "(other)" not in fl and "vocal" in fl:
-                        candidates.append(os.path.join(out_dir, f))
-            if candidates:
-                existing_vocal = candidates[0]
+            existing_stems = [
+                os.path.join(out_dir, f)
+                for f in os.listdir(out_dir)
+                if name_sanitized.lower() in f.lower()
+            ]
+            existing_vocal = pick_vocal_stem(existing_stems)
 
             if existing_vocal:
                 print(f"  [{name}] SKIP (đã có sẵn): {os.path.basename(existing_vocal)}")
                 audio, sr = sf.read(wav_path)
                 duration = audio.shape[0] / sr
+                cache_key = f"{model_short_name}/{name}"
+                if cache_key in timings_cache:
+                    lat = timings_cache[cache_key]
+                else:
+                    rtf_est = LATENCY_DEFAULT_RTF.get(model_short_name, 8.0)
+                    elapsed_est = rtf_est * duration
+                    lat = make_latency_record(elapsed_est, duration, estimated=True)
+                    timings_cache[cache_key] = lat
                 results[name] = {
                     "model": model_short_name,
                     "vocal_path": existing_vocal,
                     "all_stems": [existing_vocal],
                     "duration_s": round(duration, 2),
-                    "process_time_s": None,
-                    "RTF": None,
+                    "process_time_s": lat["latency_s"],
+                    "RTF": lat.get("rtf"),
+                    "latency_mss": lat,
                 }
+                est_tag = " (ước tính)" if lat.get("estimated") else ""
+                print(f"    ⏱ MSS latency={lat['latency_ms']:.0f}ms RTF={lat.get('rtf')}{est_tag}")
                 continue
 
             print(f"  [{name}] đang tách vocal...")
@@ -250,32 +327,27 @@ def run_separation(wav_files, model_short_name, model_filename):
                 out_files_full.append(f)
             out_files = out_files_full
 
-            # Tìm file vocals trong output
-            vocal_path = None
-            for f in out_files:
-                fname_lower = os.path.basename(f).lower()
-                if "vocal" in fname_lower or "(vocals)" in fname_lower:
-                    vocal_path = f
-                    break
-            if vocal_path is None and out_files:
-                vocal_path = out_files[0]
+            vocal_path = pick_vocal_stem(out_files)
 
+            lat = make_latency_record(elapsed, duration)
+            timings_cache[f"{model_short_name}/{name}"] = lat
             results[name] = {
                 "model": model_short_name,
                 "vocal_path": vocal_path,
                 "all_stems": out_files,
                 "duration_s": round(duration, 2),
-                "process_time_s": round(elapsed, 3),
-                "RTF": round(rtf, 4),
+                "process_time_s": lat["latency_s"],
+                "RTF": lat.get("rtf"),
+                "latency_mss": lat,
             }
             stem_names = [os.path.basename(f) for f in out_files]
-            print(f"    ✓ RTF={rtf:.3f} | stems: {stem_names}")
+            print(f"    ✓ latency={lat['latency_ms']:.0f}ms RTF={rtf:.3f} | stems: {stem_names}")
 
     except Exception as e:
         print(f"  [ERROR] {model_short_name}: {e}")
         import traceback; traceback.print_exc()
 
-    return results
+    return results, model_load_latency
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -333,13 +405,15 @@ def run_enhancement_on_vocals(separation_results, model_short_name):
             rtf = elapsed / max(duration, 0.001)
 
             sf.write(out_path, enhanced.squeeze().numpy(), model_sr)
+            lat = make_latency_record(elapsed, duration)
             enhanced_results[name] = {
                 "enhanced_path": out_path,
                 "duration_s": round(duration, 2),
-                "enhance_time_s": round(elapsed, 3),
-                "RTF_enhance": round(rtf, 4),
+                "enhance_time_s": lat["latency_s"],
+                "RTF_enhance": lat.get("rtf"),
+                "latency_enhance": lat,
             }
-            print(f"    ✓ RTF={rtf:.3f} | saved: {os.path.basename(out_path)}")
+            print(f"    ✓ latency={lat['latency_ms']:.0f}ms RTF={rtf:.3f} | saved: {os.path.basename(out_path)}")
 
     except Exception as e:
         print(f"  [ERROR] DeepFilterNet: {e}")
@@ -361,8 +435,10 @@ def main():
     print("  Eval    : DNSMOS P.835 (SIG, BAK, OVRL)")
     print("█"*65)
 
+    timings_cache = load_timings_cache()
+
     # ── Bước 0: Chuẩn bị WAV ──────────────────────────────────────
-    wav_files = extract_and_convert()
+    wav_files, convert_latency = extract_and_convert()
     if not wav_files:
         print("[ERROR] Không tìm thấy file WAV nào!")
         return
@@ -384,41 +460,49 @@ def main():
     for wf in wav_files:
         name = os.path.splitext(os.path.basename(wf))[0]
         snr  = snr_estimate(wf)
-        dnsmos = compute_dnsmos(wf)
-        raw_metrics[name] = {"snr": snr, "dnsmos": dnsmos}
+        dnsmos, lat_dns = timed_dnsmos(wf)
+        raw_metrics[name] = {"snr": snr, "dnsmos": dnsmos, "latency_dnsmos_raw": lat_dns}
         if dnsmos:
-            print(f"  {name[:40]:<40} SNR={snr:>6} dB | OVRL={dnsmos['OVRL']} SIG={dnsmos['SIG']} BAK={dnsmos['BAK']}")
+            print(f"  {name[:40]:<40} SNR={snr:>6} dB | OVRL={dnsmos['OVRL']} | dnsmos={lat_dns['latency_ms']:.0f}ms")
 
     # ── Chạy 2 separation models ───────────────────────────────────
     all_results = {}
+    model_load_times = {}
     for model_short, model_file in SEPARATION_MODELS.items():
-        sep_results  = run_separation(wav_files, model_short, model_file)
+        sep_results, load_lat = run_separation(wav_files, model_short, model_file, timings_cache)
+        model_load_times[model_short] = load_lat
         enh_results  = run_enhancement_on_vocals(sep_results, model_short)
 
         # DNSMOS sau tách vocal (trước enhance)
         print(f"\n[DNSMOS] Sau tách vocal ({model_short}) – trước enhance:")
         for name, info in sep_results.items():
             vp = info.get("vocal_path")
-            scores = compute_dnsmos(vp) if vp and os.path.exists(vp) else None
-            sep_results[name]["dnsmos_vocal"] = scores
-            snr_v = snr_estimate(vp) if vp and os.path.exists(vp) else None
-            sep_results[name]["snr_vocal"] = snr_v
-            if scores:
-                print(f"  {name[:40]:<40} SNR={snr_v:>6} | OVRL={scores['OVRL']} SIG={scores['SIG']} BAK={scores['BAK']}")
+            if vp and os.path.exists(vp):
+                scores, lat_dns = timed_dnsmos(vp)
+                sep_results[name]["dnsmos_vocal"] = scores
+                sep_results[name]["latency_dnsmos_sep"] = lat_dns
+                snr_v = snr_estimate(vp)
+                sep_results[name]["snr_vocal"] = snr_v
+                if scores:
+                    print(f"  {name[:40]:<40} OVRL={scores['OVRL']} | dnsmos={lat_dns['latency_ms']:.0f}ms")
 
         # DNSMOS sau enhance
         print(f"\n[DNSMOS] Sau enhance ({model_short} → DFN3):")
         for name, info in enh_results.items():
             ep = info.get("enhanced_path")
-            scores = compute_dnsmos(ep) if ep and os.path.exists(ep) else None
-            enh_results[name]["dnsmos_enhanced"] = scores
-            if scores:
-                print(f"  {name[:40]:<40} OVRL={scores['OVRL']} SIG={scores['SIG']} BAK={scores['BAK']}")
+            if ep and os.path.exists(ep):
+                scores, lat_dns = timed_dnsmos(ep)
+                enh_results[name]["dnsmos_enhanced"] = scores
+                enh_results[name]["latency_dnsmos_enh"] = lat_dns
+                if scores:
+                    print(f"  {name[:40]:<40} OVRL={scores['OVRL']} | dnsmos={lat_dns['latency_ms']:.0f}ms")
 
         all_results[model_short] = {
             "separation": sep_results,
             "enhancement": enh_results,
         }
+
+    save_timings_cache(timings_cache)
 
     # ── Bảng kết quả tổng hợp ─────────────────────────────────────
     print("\n" + "="*95)
@@ -450,6 +534,11 @@ def main():
             row[f"dnsmos_enh_{model_short}"]  = enh_r.get("dnsmos_enhanced")
             row[f"rtf_sep_{model_short}"]     = sep_r.get("RTF")
             row[f"rtf_enh_{model_short}"]     = enh_r.get("RTF_enhance")
+            row[f"latency_mss_ms_{model_short}"] = (sep_r.get("latency_mss") or {}).get("latency_ms")
+            row[f"latency_enh_ms_{model_short}"] = (enh_r.get("latency_enhance") or {}).get("latency_ms")
+            mss_ms = row[f"latency_mss_ms_{model_short}"] or 0
+            enh_ms = row[f"latency_enh_ms_{model_short}"] or 0
+            row[f"latency_pipeline_ms_{model_short}"] = round(mss_ms + enh_ms, 1) if (mss_ms or enh_ms) else None
             line += f" {str(ov_sep):>14} {str(ov_enh):>14}"
 
         print(line)
@@ -463,20 +552,89 @@ def main():
     print("  RTF < 1.0  = xử lý nhanh hơn real-time")
     print("  DNSMOS thang 1–5 (càng cao càng tốt)")
 
-    # ── RTF tổng hợp ───────────────────────────────────────────────
-    print("\n" + "="*60)
-    print("TỐC ĐỘ XỬ LÝ (RTF – Real-Time Factor, thấp = tốt)")
-    print("="*60)
-    for model_short, model_file in SEPARATION_MODELS.items():
+    # ── Độ trễ / RTF tổng hợp ─────────────────────────────────────
+    print("\n" + "="*80)
+    print("ĐỘ TRỄ XỬ LÝ LOCAL (latency — audio local, không qua HTTP API)")
+    print("="*80)
+    hdr = f"{'Pipeline':<28} {'MSS ms':>10} {'Enh ms':>10} {'Total ms':>12} {'RTF MSS':>9} {'RTF Enh':>9}"
+    print(hdr)
+    print("-"*80)
+
+    latency_report = {
+        "note": "Độ trễ xử lý local (wall-clock). Không phải latency HTTP API.",
+        "model_load": model_load_times,
+        "summary": {},
+        "per_file": {},
+    }
+
+    for model_short in SEPARATION_MODELS:
         sep_results = all_results.get(model_short, {}).get("separation", {})
-        rtfs = [v.get("RTF") for v in sep_results.values() if v.get("RTF") is not None]
-        if rtfs:
-            print(f"  [{model_short}] RTF trung bình: {np.mean(rtfs):.3f} (min={min(rtfs):.3f}, max={max(rtfs):.3f})")
+        enh_results = all_results.get(model_short, {}).get("enhancement", {})
+
+        mss_ms_list = []
+        enh_ms_list = []
+        rtfs_sep = []
+        rtfs_enh = []
+
+        for name in sep_results:
+            sep_r = sep_results.get(name, {})
+            enh_r = enh_results.get(name, {})
+            mss_lat = sep_r.get("latency_mss") or {}
+            enh_lat = enh_r.get("latency_enhance") or {}
+            mss_ms = mss_lat.get("latency_ms")
+            enh_ms = enh_lat.get("latency_ms")
+            if mss_ms:
+                mss_ms_list.append(mss_ms)
+            if enh_ms:
+                enh_ms_list.append(enh_ms)
+            if sep_r.get("RTF") is not None:
+                rtfs_sep.append(sep_r["RTF"])
+            if enh_r.get("RTF_enhance") is not None:
+                rtfs_enh.append(enh_r["RTF_enhance"])
+
+            if name not in latency_report["per_file"]:
+                latency_report["per_file"][name] = {}
+            latency_report["per_file"][name][model_short] = {
+                "mss": mss_lat,
+                "enhance": enh_lat,
+                "dnsmos_sep": sep_r.get("latency_dnsmos_sep"),
+                "dnsmos_enh": enh_r.get("latency_dnsmos_enh"),
+                "pipeline_total_ms": round((mss_ms or 0) + (enh_ms or 0), 1) if (mss_ms or enh_ms) else None,
+            }
+
+        if mss_ms_list:
+            latency_report["summary"][model_short] = {
+                "mss_latency_ms_avg": round(np.mean(mss_ms_list), 1),
+                "mss_latency_ms_min": round(min(mss_ms_list), 1),
+                "mss_latency_ms_max": round(max(mss_ms_list), 1),
+                "enhance_latency_ms_avg": round(np.mean(enh_ms_list), 1) if enh_ms_list else None,
+                "pipeline_latency_ms_avg": round(np.mean(mss_ms_list) + np.mean(enh_ms_list), 1) if enh_ms_list else round(np.mean(mss_ms_list), 1),
+                "rtf_mss_avg": round(np.mean(rtfs_sep), 3) if rtfs_sep else None,
+                "rtf_enhance_avg": round(np.mean(rtfs_enh), 4) if rtfs_enh else None,
+            }
+            s = latency_report["summary"][model_short]
+            print(
+                f"{model_short:<28} "
+                f"{s['mss_latency_ms_avg']:>10.0f} "
+                f"{s.get('enhance_latency_ms_avg') or 0:>10.0f} "
+                f"{s['pipeline_latency_ms_avg']:>12.0f} "
+                f"{s.get('rtf_mss_avg') or 0:>9.3f} "
+                f"{s.get('rtf_enhance_avg') or 0:>9.4f}"
+            )
+
+    print("="*80)
+    print("  latency_ms = thời gian xử lý thực tế (giây × 1000)")
+    print("  Total ms   = MSS + DeepFilterNet3 (chưa gồm DNSMOS)")
+    print("  RTF < 1    = nhanh hơn real-time")
 
     # ── Lưu kết quả ────────────────────────────────────────────────
     with open(RESULTS_JSON, "w", encoding="utf-8") as f:
         json.dump(final_rows, f, ensure_ascii=False, indent=2)
+    with open(LATENCY_JSON, "w", encoding="utf-8") as f:
+        json.dump(latency_report, f, ensure_ascii=False, indent=2)
     print(f"\n[XONG] Kết quả JSON lưu tại: {RESULTS_JSON}")
+    print(f"[XONG] Độ trễ JSON lưu tại: {LATENCY_JSON}")
+    print(f"[XONG] Timings cache   : {TIMINGS_CACHE}")
     print(f"[XONG] Audio tách vocal: {SEP_OUT_DIR}")
     print(f"[XONG] Audio enhanced  : {ENH_OUT_DIR}")
 

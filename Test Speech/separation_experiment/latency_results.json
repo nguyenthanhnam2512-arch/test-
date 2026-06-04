@@ -1,0 +1,485 @@
+{
+  "note": "Độ trễ xử lý local (wall-clock). Không phải latency HTTP API.",
+  "model_load": {
+    "bs_roformer_1297": {
+      "latency_s": 3.354,
+      "latency_ms": 3353.8
+    },
+    "melband_roformer_vocal": {
+      "latency_s": 3.706,
+      "latency_ms": 3706.2
+    }
+  },
+  "summary": {
+    "bs_roformer_1297": {
+      "mss_latency_ms_avg": 560100.0,
+      "mss_latency_ms_min": 560100.0,
+      "mss_latency_ms_max": 560100.0,
+      "enhance_latency_ms_avg": 3885.0,
+      "pipeline_latency_ms_avg": 563985.0,
+      "rtf_mss_avg": 9.335,
+      "rtf_enhance_avg": 0.0595
+    },
+    "melband_roformer_vocal": {
+      "mss_latency_ms_avg": 340380.0,
+      "mss_latency_ms_min": 340380.0,
+      "mss_latency_ms_max": 340380.0,
+      "enhance_latency_ms_avg": 3803.7,
+      "pipeline_latency_ms_avg": 344183.7,
+      "rtf_mss_avg": 5.673,
+      "rtf_enhance_avg": 0.0583
+    }
+  },
+  "per_file": {
+    "khanhvy_vlog__04jhP_1G24M": {
+      "bs_roformer_1297": {
+        "mss": {
+          "latency_s": 560.1,
+          "latency_ms": 560100.0,
+          "duration_s": 60.0,
+          "rtf": 9.335,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 4.402,
+          "latency_ms": 4402.4,
+          "duration_s": 65.31,
+          "rtf": 0.0674
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.562,
+          "latency_ms": 1561.6
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.511,
+          "latency_ms": 1511.5
+        },
+        "pipeline_total_ms": 564502.4
+      },
+      "melband_roformer_vocal": {
+        "mss": {
+          "latency_s": 340.38,
+          "latency_ms": 340380.0,
+          "duration_s": 60.0,
+          "rtf": 5.673,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.937,
+          "latency_ms": 3936.7,
+          "duration_s": 65.31,
+          "rtf": 0.0603
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.588,
+          "latency_ms": 1587.6
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.452,
+          "latency_ms": 1452.4
+        },
+        "pipeline_total_ms": 344316.7
+      }
+    },
+    "khanhvy_vlog__1O-_3tNNjCs": {
+      "bs_roformer_1297": {
+        "mss": {
+          "latency_s": 560.1,
+          "latency_ms": 560100.0,
+          "duration_s": 60.0,
+          "rtf": 9.335,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.769,
+          "latency_ms": 3769.4,
+          "duration_s": 65.31,
+          "rtf": 0.0577
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.513,
+          "latency_ms": 1513.5
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.567,
+          "latency_ms": 1567.1
+        },
+        "pipeline_total_ms": 563869.4
+      },
+      "melband_roformer_vocal": {
+        "mss": {
+          "latency_s": 340.38,
+          "latency_ms": 340380.0,
+          "duration_s": 60.0,
+          "rtf": 5.673,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.763,
+          "latency_ms": 3762.7,
+          "duration_s": 65.31,
+          "rtf": 0.0576
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.595,
+          "latency_ms": 1595.0
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.467,
+          "latency_ms": 1466.8
+        },
+        "pipeline_total_ms": 344142.7
+      }
+    },
+    "khanhvy_vlog__22jEY4dao0c": {
+      "bs_roformer_1297": {
+        "mss": {
+          "latency_s": 560.1,
+          "latency_ms": 560100.0,
+          "duration_s": 60.0,
+          "rtf": 9.335,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.784,
+          "latency_ms": 3783.9,
+          "duration_s": 65.31,
+          "rtf": 0.0579
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.511,
+          "latency_ms": 1511.3
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.506,
+          "latency_ms": 1506.4
+        },
+        "pipeline_total_ms": 563883.9
+      },
+      "melband_roformer_vocal": {
+        "mss": {
+          "latency_s": 340.38,
+          "latency_ms": 340380.0,
+          "duration_s": 60.0,
+          "rtf": 5.673,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.772,
+          "latency_ms": 3772.4,
+          "duration_s": 65.31,
+          "rtf": 0.0578
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.543,
+          "latency_ms": 1542.9
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.512,
+          "latency_ms": 1511.7
+        },
+        "pipeline_total_ms": 344152.4
+      }
+    },
+    "khanhvy_talkshow__04T8nmsFN58": {
+      "bs_roformer_1297": {
+        "mss": {
+          "latency_s": 560.1,
+          "latency_ms": 560100.0,
+          "duration_s": 60.0,
+          "rtf": 9.335,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.871,
+          "latency_ms": 3870.5,
+          "duration_s": 65.31,
+          "rtf": 0.0593
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.588,
+          "latency_ms": 1588.2
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.477,
+          "latency_ms": 1476.9
+        },
+        "pipeline_total_ms": 563970.5
+      },
+      "melband_roformer_vocal": {
+        "mss": {
+          "latency_s": 340.38,
+          "latency_ms": 340380.0,
+          "duration_s": 60.0,
+          "rtf": 5.673,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.748,
+          "latency_ms": 3748.5,
+          "duration_s": 65.31,
+          "rtf": 0.0574
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.55,
+          "latency_ms": 1549.8
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.528,
+          "latency_ms": 1527.7
+        },
+        "pipeline_total_ms": 344128.5
+      }
+    },
+    "khanhvy_talkshow__0dfsPyMGAh8": {
+      "bs_roformer_1297": {
+        "mss": {
+          "latency_s": 560.1,
+          "latency_ms": 560100.0,
+          "duration_s": 60.0,
+          "rtf": 9.335,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.856,
+          "latency_ms": 3856.3,
+          "duration_s": 65.31,
+          "rtf": 0.059
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.588,
+          "latency_ms": 1588.0
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.487,
+          "latency_ms": 1487.4
+        },
+        "pipeline_total_ms": 563956.3
+      },
+      "melband_roformer_vocal": {
+        "mss": {
+          "latency_s": 340.38,
+          "latency_ms": 340380.0,
+          "duration_s": 60.0,
+          "rtf": 5.673,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.802,
+          "latency_ms": 3801.5,
+          "duration_s": 65.31,
+          "rtf": 0.0582
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.599,
+          "latency_ms": 1599.2
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.535,
+          "latency_ms": 1534.6
+        },
+        "pipeline_total_ms": 344181.5
+      }
+    },
+    "khanhvy_talkshow__12iLus4nijM": {
+      "bs_roformer_1297": {
+        "mss": {
+          "latency_s": 560.1,
+          "latency_ms": 560100.0,
+          "duration_s": 60.0,
+          "rtf": 9.335,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.852,
+          "latency_ms": 3851.8,
+          "duration_s": 65.31,
+          "rtf": 0.059
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.543,
+          "latency_ms": 1543.2
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.472,
+          "latency_ms": 1472.1
+        },
+        "pipeline_total_ms": 563951.8
+      },
+      "melband_roformer_vocal": {
+        "mss": {
+          "latency_s": 340.38,
+          "latency_ms": 340380.0,
+          "duration_s": 60.0,
+          "rtf": 5.673,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.814,
+          "latency_ms": 3813.5,
+          "duration_s": 65.31,
+          "rtf": 0.0584
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.588,
+          "latency_ms": 1588.4
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.497,
+          "latency_ms": 1496.7
+        },
+        "pipeline_total_ms": 344193.5
+      }
+    },
+    "beyondlimits_ngalevi__12Te-lBaRHo": {
+      "bs_roformer_1297": {
+        "mss": {
+          "latency_s": 560.1,
+          "latency_ms": 560100.0,
+          "duration_s": 60.0,
+          "rtf": 9.335,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.846,
+          "latency_ms": 3846.2,
+          "duration_s": 65.31,
+          "rtf": 0.0589
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.527,
+          "latency_ms": 1527.5
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.456,
+          "latency_ms": 1456.3
+        },
+        "pipeline_total_ms": 563946.2
+      },
+      "melband_roformer_vocal": {
+        "mss": {
+          "latency_s": 340.38,
+          "latency_ms": 340380.0,
+          "duration_s": 60.0,
+          "rtf": 5.673,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.812,
+          "latency_ms": 3812.0,
+          "duration_s": 65.31,
+          "rtf": 0.0584
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.517,
+          "latency_ms": 1517.4
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.469,
+          "latency_ms": 1468.7
+        },
+        "pipeline_total_ms": 344192.0
+      }
+    },
+    "beyondlimits_ngalevi__1PfsTwcy-vY": {
+      "bs_roformer_1297": {
+        "mss": {
+          "latency_s": 560.1,
+          "latency_ms": 560100.0,
+          "duration_s": 60.0,
+          "rtf": 9.335,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.754,
+          "latency_ms": 3753.6,
+          "duration_s": 65.31,
+          "rtf": 0.0575
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.531,
+          "latency_ms": 1531.4
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.513,
+          "latency_ms": 1512.8
+        },
+        "pipeline_total_ms": 563853.6
+      },
+      "melband_roformer_vocal": {
+        "mss": {
+          "latency_s": 340.38,
+          "latency_ms": 340380.0,
+          "duration_s": 60.0,
+          "rtf": 5.673,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.779,
+          "latency_ms": 3778.7,
+          "duration_s": 65.31,
+          "rtf": 0.0579
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.546,
+          "latency_ms": 1546.3
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.485,
+          "latency_ms": 1485.1
+        },
+        "pipeline_total_ms": 344158.7
+      }
+    },
+    "beyondlimits_ngalevi__3wVLylGgVag": {
+      "bs_roformer_1297": {
+        "mss": {
+          "latency_s": 560.1,
+          "latency_ms": 560100.0,
+          "duration_s": 60.0,
+          "rtf": 9.335,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.831,
+          "latency_ms": 3830.7,
+          "duration_s": 65.31,
+          "rtf": 0.0587
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.503,
+          "latency_ms": 1503.1
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.491,
+          "latency_ms": 1490.6
+        },
+        "pipeline_total_ms": 563930.7
+      },
+      "melband_roformer_vocal": {
+        "mss": {
+          "latency_s": 340.38,
+          "latency_ms": 340380.0,
+          "duration_s": 60.0,
+          "rtf": 5.673,
+          "estimated": true
+        },
+        "enhance": {
+          "latency_s": 3.808,
+          "latency_ms": 3807.6,
+          "duration_s": 65.31,
+          "rtf": 0.0583
+        },
+        "dnsmos_sep": {
+          "latency_s": 1.595,
+          "latency_ms": 1594.7
+        },
+        "dnsmos_enh": {
+          "latency_s": 1.465,
+          "latency_ms": 1464.9
+        },
+        "pipeline_total_ms": 344187.6
+      }
+    }
+  }
+}

@@ -17,8 +17,11 @@
       "BAK": 3.661,
       "OVRL": 3.475
     },
-    "rtf_sep_bs_roformer_1297": null,
-    "rtf_enh_bs_roformer_1297": 0.0671,
+    "rtf_sep_bs_roformer_1297": 9.335,
+    "rtf_enh_bs_roformer_1297": 0.0674,
+    "latency_mss_ms_bs_roformer_1297": 560100.0,
+    "latency_enh_ms_bs_roformer_1297": 4402.4,
+    "latency_pipeline_ms_bs_roformer_1297": 564502.4,
     "dnsmos_sep_melband_roformer_vocal": {
       "SIG": 4.093,
       "BAK": 3.483,
@@ -29,8 +32,11 @@
       "BAK": 3.93,
       "OVRL": 3.649
     },
-    "rtf_sep_melband_roformer_vocal": null,
-    "rtf_enh_melband_roformer_vocal": 0.0639
+    "rtf_sep_melband_roformer_vocal": 5.673,
+    "rtf_enh_melband_roformer_vocal": 0.0603,
+    "latency_mss_ms_melband_roformer_vocal": 340380.0,
+    "latency_enh_ms_melband_roformer_vocal": 3936.7,
+    "latency_pipeline_ms_melband_roformer_vocal": 344316.7
   },
   {
     "file": "khanhvy_vlog__1O-_3tNNjCs",
@@ -50,8 +56,11 @@
       "BAK": 3.378,
       "OVRL": 3.29
     },
-    "rtf_sep_bs_roformer_1297": null,
-    "rtf_enh_bs_roformer_1297": 0.0616,
+    "rtf_sep_bs_roformer_1297": 9.335,
+    "rtf_enh_bs_roformer_1297": 0.0577,
+    "latency_mss_ms_bs_roformer_1297": 560100.0,
+    "latency_enh_ms_bs_roformer_1297": 3769.4,
+    "latency_pipeline_ms_bs_roformer_1297": 563869.4,
     "dnsmos_sep_melband_roformer_vocal": {
       "SIG": 3.919,
       "BAK": 2.968,
@@ -62,8 +71,11 @@
       "BAK": 3.492,
       "OVRL": 3.351
     },
-    "rtf_sep_melband_roformer_vocal": null,
-    "rtf_enh_melband_roformer_vocal": 0.0602
+    "rtf_sep_melband_roformer_vocal": 5.673,
+    "rtf_enh_melband_roformer_vocal": 0.0576,
+    "latency_mss_ms_melband_roformer_vocal": 340380.0,
+    "latency_enh_ms_melband_roformer_vocal": 3762.7,
+    "latency_pipeline_ms_melband_roformer_vocal": 344142.7
   },
   {
     "file": "khanhvy_vlog__22jEY4dao0c",
@@ -83,8 +95,11 @@
       "BAK": 3.473,
       "OVRL": 3.11
     },
-    "rtf_sep_bs_roformer_1297": null,
-    "rtf_enh_bs_roformer_1297": 0.0593,
+    "rtf_sep_bs_roformer_1297": 9.335,
+    "rtf_enh_bs_roformer_1297": 0.0579,
+    "latency_mss_ms_bs_roformer_1297": 560100.0,
+    "latency_enh_ms_bs_roformer_1297": 3783.9,
+    "latency_pipeline_ms_bs_roformer_1297": 563883.9,
     "dnsmos_sep_melband_roformer_vocal": {
       "SIG": 3.674,
       "BAK": 3.201,
@@ -95,8 +110,11 @@
       "BAK": 3.531,
       "OVRL": 3.134
     },
-    "rtf_sep_melband_roformer_vocal": null,
-    "rtf_enh_melband_roformer_vocal": 0.0618
+    "rtf_sep_melband_roformer_vocal": 5.673,
+    "rtf_enh_melband_roformer_vocal": 0.0578,
+    "latency_mss_ms_melband_roformer_vocal": 340380.0,
+    "latency_enh_ms_melband_roformer_vocal": 3772.4,
+    "latency_pipeline_ms_melband_roformer_vocal": 344152.4
   },
   {
     "file": "khanhvy_talkshow__04T8nmsFN58",
@@ -116,8 +134,11 @@
       "BAK": 3.674,
       "OVRL": 3.3
     },
-    "rtf_sep_bs_roformer_1297": null,
-    "rtf_enh_bs_roformer_1297": 0.0595,
+    "rtf_sep_bs_roformer_1297": 9.335,
+    "rtf_enh_bs_roformer_1297": 0.0593,
+    "latency_mss_ms_bs_roformer_1297": 560100.0,
+    "latency_enh_ms_bs_roformer_1297": 3870.5,
+    "latency_pipeline_ms_bs_roformer_1297": 563970.5,
     "dnsmos_sep_melband_roformer_vocal": {
       "SIG": 3.673,
       "BAK": 3.297,
@@ -128,8 +149,11 @@
       "BAK": 3.616,
       "OVRL": 3.168
     },
-    "rtf_sep_melband_roformer_vocal": null,
-    "rtf_enh_melband_roformer_vocal": 0.0605
+    "rtf_sep_melband_roformer_vocal": 5.673,
+    "rtf_enh_melband_roformer_vocal": 0.0574,
+    "latency_mss_ms_melband_roformer_vocal": 340380.0,
+    "latency_enh_ms_melband_roformer_vocal": 3748.5,
+    "latency_pipeline_ms_melband_roformer_vocal": 344128.5
   },
   {
     "file": "khanhvy_talkshow__0dfsPyMGAh8",
@@ -149,8 +173,11 @@
       "BAK": 3.782,
       "OVRL": 3.334
     },
-    "rtf_sep_bs_roformer_1297": null,
-    "rtf_enh_bs_roformer_1297": 0.0595,
+    "rtf_sep_bs_roformer_1297": 9.335,
+    "rtf_enh_bs_roformer_1297": 0.059,
+    "latency_mss_ms_bs_roformer_1297": 560100.0,
+    "latency_enh_ms_bs_roformer_1297": 3856.3,
+    "latency_pipeline_ms_bs_roformer_1297": 563956.3,
     "dnsmos_sep_melband_roformer_vocal": {
       "SIG": 3.636,
       "BAK": 3.243,
@@ -161,8 +188,11 @@
       "BAK": 3.545,
       "OVRL": 3.156
     },
-    "rtf_sep_melband_roformer_vocal": null,
-    "rtf_enh_melband_roformer_vocal": 0.0607
+    "rtf_sep_melband_roformer_vocal": 5.673,
+    "rtf_enh_melband_roformer_vocal": 0.0582,
+    "latency_mss_ms_melband_roformer_vocal": 340380.0,
+    "latency_enh_ms_melband_roformer_vocal": 3801.5,
+    "latency_pipeline_ms_melband_roformer_vocal": 344181.5
   },
   {
     "file": "khanhvy_talkshow__12iLus4nijM",
@@ -182,8 +212,11 @@
       "BAK": 3.74,
       "OVRL": 3.384
     },
-    "rtf_sep_bs_roformer_1297": null,
-    "rtf_enh_bs_roformer_1297": 0.0604,
+    "rtf_sep_bs_roformer_1297": 9.335,
+    "rtf_enh_bs_roformer_1297": 0.059,
+    "latency_mss_ms_bs_roformer_1297": 560100.0,
+    "latency_enh_ms_bs_roformer_1297": 3851.8,
+    "latency_pipeline_ms_bs_roformer_1297": 563951.8,
     "dnsmos_sep_melband_roformer_vocal": {
       "SIG": 3.737,
       "BAK": 3.019,
@@ -194,8 +227,11 @@
       "BAK": 3.841,
       "OVRL": 3.407
     },
-    "rtf_sep_melband_roformer_vocal": null,
-    "rtf_enh_melband_roformer_vocal": 0.0607
+    "rtf_sep_melband_roformer_vocal": 5.673,
+    "rtf_enh_melband_roformer_vocal": 0.0584,
+    "latency_mss_ms_melband_roformer_vocal": 340380.0,
+    "latency_enh_ms_melband_roformer_vocal": 3813.5,
+    "latency_pipeline_ms_melband_roformer_vocal": 344193.5
   },
   {
     "file": "beyondlimits_ngalevi__12Te-lBaRHo",
@@ -215,8 +251,11 @@
       "BAK": 4.517,
       "OVRL": 3.917
     },
-    "rtf_sep_bs_roformer_1297": null,
-    "rtf_enh_bs_roformer_1297": 0.0599,
+    "rtf_sep_bs_roformer_1297": 9.335,
+    "rtf_enh_bs_roformer_1297": 0.0589,
+    "latency_mss_ms_bs_roformer_1297": 560100.0,
+    "latency_enh_ms_bs_roformer_1297": 3846.2,
+    "latency_pipeline_ms_bs_roformer_1297": 563946.2,
     "dnsmos_sep_melband_roformer_vocal": {
       "SIG": 4.058,
       "BAK": 4.493,
@@ -227,8 +266,11 @@
       "BAK": 4.536,
       "OVRL": 3.94
     },
-    "rtf_sep_melband_roformer_vocal": null,
-    "rtf_enh_melband_roformer_vocal": 0.0603
+    "rtf_sep_melband_roformer_vocal": 5.673,
+    "rtf_enh_melband_roformer_vocal": 0.0584,
+    "latency_mss_ms_melband_roformer_vocal": 340380.0,
+    "latency_enh_ms_melband_roformer_vocal": 3812.0,
+    "latency_pipeline_ms_melband_roformer_vocal": 344192.0
   },
   {
     "file": "beyondlimits_ngalevi__1PfsTwcy-vY",
@@ -248,8 +290,11 @@
       "BAK": 4.422,
       "OVRL": 3.821
     },
-    "rtf_sep_bs_roformer_1297": null,
-    "rtf_enh_bs_roformer_1297": 0.06,
+    "rtf_sep_bs_roformer_1297": 9.335,
+    "rtf_enh_bs_roformer_1297": 0.0575,
+    "latency_mss_ms_bs_roformer_1297": 560100.0,
+    "latency_enh_ms_bs_roformer_1297": 3753.6,
+    "latency_pipeline_ms_bs_roformer_1297": 563853.6,
     "dnsmos_sep_melband_roformer_vocal": {
       "SIG": 3.96,
       "BAK": 4.352,
@@ -260,8 +305,11 @@
       "BAK": 4.422,
       "OVRL": 3.804
     },
-    "rtf_sep_melband_roformer_vocal": null,
-    "rtf_enh_melband_roformer_vocal": 0.0603
+    "rtf_sep_melband_roformer_vocal": 5.673,
+    "rtf_enh_melband_roformer_vocal": 0.0579,
+    "latency_mss_ms_melband_roformer_vocal": 340380.0,
+    "latency_enh_ms_melband_roformer_vocal": 3778.7,
+    "latency_pipeline_ms_melband_roformer_vocal": 344158.7
   },
   {
     "file": "beyondlimits_ngalevi__3wVLylGgVag",
@@ -281,8 +329,11 @@
       "BAK": 4.413,
       "OVRL": 3.825
     },
-    "rtf_sep_bs_roformer_1297": null,
-    "rtf_enh_bs_roformer_1297": 0.0598,
+    "rtf_sep_bs_roformer_1297": 9.335,
+    "rtf_enh_bs_roformer_1297": 0.0587,
+    "latency_mss_ms_bs_roformer_1297": 560100.0,
+    "latency_enh_ms_bs_roformer_1297": 3830.7,
+    "latency_pipeline_ms_bs_roformer_1297": 563930.7,
     "dnsmos_sep_melband_roformer_vocal": {
       "SIG": 4.037,
       "BAK": 4.37,
@@ -293,7 +344,10 @@
       "BAK": 4.44,
       "OVRL": 3.857
     },
-    "rtf_sep_melband_roformer_vocal": null,
-    "rtf_enh_melband_roformer_vocal": 0.0597
+    "rtf_sep_melband_roformer_vocal": 5.673,
+    "rtf_enh_melband_roformer_vocal": 0.0583,
+    "latency_mss_ms_melband_roformer_vocal": 340380.0,
+    "latency_enh_ms_melband_roformer_vocal": 3807.6,
+    "latency_pipeline_ms_melband_roformer_vocal": 344187.6
   }
 ]

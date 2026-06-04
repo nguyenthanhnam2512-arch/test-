@@ -64,5 +64,12 @@ Thực nghiệm lấy **3 file đầu mỗi category** (tổng 9 files) để đ
 - **DNSMOS OVRL** – Overall MOS (thang 1–5), không cần reference audio
 - **DNSMOS SIG** – Speech quality signal score
 - **DNSMOS BAK** – Background noise quality score
+- **latency_ms** – Độ trễ xử lý local từng bước (ms)
 - **RTF** – Real-Time Factor (< 1.0 = xử lý nhanh hơn real-time)
 - **SNR** – Signal-to-Noise Ratio ước tính (dB)
+
+## Kết quả output
+
+- `results.json` — DNSMOS / SNR + latency (ms)
+- `latency_results.json` — độ trễ chi tiết MSS / enhance / pipeline
+- `timings_cache.json` — cache thời gian MSS thực đo

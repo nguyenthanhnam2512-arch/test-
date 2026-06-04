@@ -1,0 +1,128 @@
+{
+  "bs_roformer_1297/khanhvy_vlog__04jhP_1G24M": {
+    "latency_s": 560.1,
+    "latency_ms": 560100.0,
+    "duration_s": 60.0,
+    "rtf": 9.335,
+    "estimated": true
+  },
+  "bs_roformer_1297/khanhvy_vlog__1O-_3tNNjCs": {
+    "latency_s": 560.1,
+    "latency_ms": 560100.0,
+    "duration_s": 60.0,
+    "rtf": 9.335,
+    "estimated": true
+  },
+  "bs_roformer_1297/khanhvy_vlog__22jEY4dao0c": {
+    "latency_s": 560.1,
+    "latency_ms": 560100.0,
+    "duration_s": 60.0,
+    "rtf": 9.335,
+    "estimated": true
+  },
+  "bs_roformer_1297/khanhvy_talkshow__04T8nmsFN58": {
+    "latency_s": 560.1,
+    "latency_ms": 560100.0,
+    "duration_s": 60.0,
+    "rtf": 9.335,
+    "estimated": true
+  },
+  "bs_roformer_1297/khanhvy_talkshow__0dfsPyMGAh8": {
+    "latency_s": 560.1,
+    "latency_ms": 560100.0,
+    "duration_s": 60.0,
+    "rtf": 9.335,
+    "estimated": true
+  },
+  "bs_roformer_1297/khanhvy_talkshow__12iLus4nijM": {
+    "latency_s": 560.1,
+    "latency_ms": 560100.0,
+    "duration_s": 60.0,
+    "rtf": 9.335,
+    "estimated": true
+  },
+  "bs_roformer_1297/beyondlimits_ngalevi__12Te-lBaRHo": {
+    "latency_s": 560.1,
+    "latency_ms": 560100.0,
+    "duration_s": 60.0,
+    "rtf": 9.335,
+    "estimated": true
+  },
+  "bs_roformer_1297/beyondlimits_ngalevi__1PfsTwcy-vY": {
+    "latency_s": 560.1,
+    "latency_ms": 560100.0,
+    "duration_s": 60.0,
+    "rtf": 9.335,
+    "estimated": true
+  },
+  "bs_roformer_1297/beyondlimits_ngalevi__3wVLylGgVag": {
+    "latency_s": 560.1,
+    "latency_ms": 560100.0,
+    "duration_s": 60.0,
+    "rtf": 9.335,
+    "estimated": true
+  },
+  "melband_roformer_vocal/khanhvy_vlog__04jhP_1G24M": {
+    "latency_s": 340.38,
+    "latency_ms": 340380.0,
+    "duration_s": 60.0,
+    "rtf": 5.673,
+    "estimated": true
+  },
+  "melband_roformer_vocal/khanhvy_vlog__1O-_3tNNjCs": {
+    "latency_s": 340.38,
+    "latency_ms": 340380.0,
+    "duration_s": 60.0,
+    "rtf": 5.673,
+    "estimated": true
+  },
+  "melband_roformer_vocal/khanhvy_vlog__22jEY4dao0c": {
+    "latency_s": 340.38,
+    "latency_ms": 340380.0,
+    "duration_s": 60.0,
+    "rtf": 5.673,
+    "estimated": true
+  },
+  "melband_roformer_vocal/khanhvy_talkshow__04T8nmsFN58": {
+    "latency_s": 340.38,
+    "latency_ms": 340380.0,
+    "duration_s": 60.0,
+    "rtf": 5.673,
+    "estimated": true
+  },
+  "melband_roformer_vocal/khanhvy_talkshow__0dfsPyMGAh8": {
+    "latency_s": 340.38,
+    "latency_ms": 340380.0,
+    "duration_s": 60.0,
+    "rtf": 5.673,
+    "estimated": true
+  },
+  "melband_roformer_vocal/khanhvy_talkshow__12iLus4nijM": {
+    "latency_s": 340.38,
+    "latency_ms": 340380.0,
+    "duration_s": 60.0,
+    "rtf": 5.673,
+    "estimated": true
+  },
+  "melband_roformer_vocal/beyondlimits_ngalevi__12Te-lBaRHo": {
+    "latency_s": 340.38,
+    "latency_ms": 340380.0,
+    "duration_s": 60.0,
+    "rtf": 5.673,
+    "estimated": true
+  },
+  "melband_roformer_vocal/beyondlimits_ngalevi__1PfsTwcy-vY": {
+    "latency_s": 340.38,
+    "latency_ms": 340380.0,
+    "duration_s": 60.0,
+    "rtf": 5.673,
+    "estimated": true
+  },
+  "melband_roformer_vocal/beyondlimits_ngalevi__3wVLylGgVag": {
+    "latency_s": 340.38,
+    "latency_ms": 340380.0,
+    "duration_s": 60.0,
+    "rtf": 5.673,
+    "estimated": true
+  }
+}
