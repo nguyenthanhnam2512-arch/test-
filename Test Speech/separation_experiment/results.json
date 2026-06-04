@@ -1,0 +1,299 @@
+[
+  {
+    "file": "khanhvy_vlog__04jhP_1G24M",
+    "snr_raw": 18.9,
+    "dnsmos_raw": {
+      "SIG": 3.977,
+      "BAK": 2.35,
+      "OVRL": 2.664
+    },
+    "dnsmos_sep_bs_roformer_1297": {
+      "SIG": 4.069,
+      "BAK": 3.513,
+      "OVRL": 3.431
+    },
+    "dnsmos_enh_bs_roformer_1297": {
+      "SIG": 4.038,
+      "BAK": 3.661,
+      "OVRL": 3.475
+    },
+    "rtf_sep_bs_roformer_1297": null,
+    "rtf_enh_bs_roformer_1297": 0.0671,
+    "dnsmos_sep_melband_roformer_vocal": {
+      "SIG": 4.093,
+      "BAK": 3.483,
+      "OVRL": 3.432
+    },
+    "dnsmos_enh_melband_roformer_vocal": {
+      "SIG": 4.106,
+      "BAK": 3.93,
+      "OVRL": 3.649
+    },
+    "rtf_sep_melband_roformer_vocal": null,
+    "rtf_enh_melband_roformer_vocal": 0.0639
+  },
+  {
+    "file": "khanhvy_vlog__1O-_3tNNjCs",
+    "snr_raw": 14.9,
+    "dnsmos_raw": {
+      "SIG": 3.708,
+      "BAK": 1.945,
+      "OVRL": 2.244
+    },
+    "dnsmos_sep_bs_roformer_1297": {
+      "SIG": 4.006,
+      "BAK": 3.078,
+      "OVRL": 3.132
+    },
+    "dnsmos_enh_bs_roformer_1297": {
+      "SIG": 3.984,
+      "BAK": 3.378,
+      "OVRL": 3.29
+    },
+    "rtf_sep_bs_roformer_1297": null,
+    "rtf_enh_bs_roformer_1297": 0.0616,
+    "dnsmos_sep_melband_roformer_vocal": {
+      "SIG": 3.919,
+      "BAK": 2.968,
+      "OVRL": 3.014
+    },
+    "dnsmos_enh_melband_roformer_vocal": {
+      "SIG": 3.977,
+      "BAK": 3.492,
+      "OVRL": 3.351
+    },
+    "rtf_sep_melband_roformer_vocal": null,
+    "rtf_enh_melband_roformer_vocal": 0.0602
+  },
+  {
+    "file": "khanhvy_vlog__22jEY4dao0c",
+    "snr_raw": 22.8,
+    "dnsmos_raw": {
+      "SIG": 3.875,
+      "BAK": 1.99,
+      "OVRL": 2.433
+    },
+    "dnsmos_sep_bs_roformer_1297": {
+      "SIG": 3.687,
+      "BAK": 3.331,
+      "OVRL": 3.054
+    },
+    "dnsmos_enh_bs_roformer_1297": {
+      "SIG": 3.683,
+      "BAK": 3.473,
+      "OVRL": 3.11
+    },
+    "rtf_sep_bs_roformer_1297": null,
+    "rtf_enh_bs_roformer_1297": 0.0593,
+    "dnsmos_sep_melband_roformer_vocal": {
+      "SIG": 3.674,
+      "BAK": 3.201,
+      "OVRL": 2.969
+    },
+    "dnsmos_enh_melband_roformer_vocal": {
+      "SIG": 3.684,
+      "BAK": 3.531,
+      "OVRL": 3.134
+    },
+    "rtf_sep_melband_roformer_vocal": null,
+    "rtf_enh_melband_roformer_vocal": 0.0618
+  },
+  {
+    "file": "khanhvy_talkshow__04T8nmsFN58",
+    "snr_raw": 15.7,
+    "dnsmos_raw": {
+      "SIG": 2.195,
+      "BAK": 1.339,
+      "OVRL": 1.514
+    },
+    "dnsmos_sep_bs_roformer_1297": {
+      "SIG": 3.85,
+      "BAK": 3.441,
+      "OVRL": 3.186
+    },
+    "dnsmos_enh_bs_roformer_1297": {
+      "SIG": 3.814,
+      "BAK": 3.674,
+      "OVRL": 3.3
+    },
+    "rtf_sep_bs_roformer_1297": null,
+    "rtf_enh_bs_roformer_1297": 0.0595,
+    "dnsmos_sep_melband_roformer_vocal": {
+      "SIG": 3.673,
+      "BAK": 3.297,
+      "OVRL": 2.979
+    },
+    "dnsmos_enh_melband_roformer_vocal": {
+      "SIG": 3.686,
+      "BAK": 3.616,
+      "OVRL": 3.168
+    },
+    "rtf_sep_melband_roformer_vocal": null,
+    "rtf_enh_melband_roformer_vocal": 0.0605
+  },
+  {
+    "file": "khanhvy_talkshow__0dfsPyMGAh8",
+    "snr_raw": 18.4,
+    "dnsmos_raw": {
+      "SIG": 2.778,
+      "BAK": 1.603,
+      "OVRL": 1.783
+    },
+    "dnsmos_sep_bs_roformer_1297": {
+      "SIG": 3.788,
+      "BAK": 3.21,
+      "OVRL": 3.055
+    },
+    "dnsmos_enh_bs_roformer_1297": {
+      "SIG": 3.773,
+      "BAK": 3.782,
+      "OVRL": 3.334
+    },
+    "rtf_sep_bs_roformer_1297": null,
+    "rtf_enh_bs_roformer_1297": 0.0595,
+    "dnsmos_sep_melband_roformer_vocal": {
+      "SIG": 3.636,
+      "BAK": 3.243,
+      "OVRL": 2.998
+    },
+    "dnsmos_enh_melband_roformer_vocal": {
+      "SIG": 3.666,
+      "BAK": 3.545,
+      "OVRL": 3.156
+    },
+    "rtf_sep_melband_roformer_vocal": null,
+    "rtf_enh_melband_roformer_vocal": 0.0607
+  },
+  {
+    "file": "khanhvy_talkshow__12iLus4nijM",
+    "snr_raw": 13.0,
+    "dnsmos_raw": {
+      "SIG": 1.454,
+      "BAK": 1.136,
+      "OVRL": 1.161
+    },
+    "dnsmos_sep_bs_roformer_1297": {
+      "SIG": 3.846,
+      "BAK": 3.053,
+      "OVRL": 2.981
+    },
+    "dnsmos_enh_bs_roformer_1297": {
+      "SIG": 3.871,
+      "BAK": 3.74,
+      "OVRL": 3.384
+    },
+    "rtf_sep_bs_roformer_1297": null,
+    "rtf_enh_bs_roformer_1297": 0.0604,
+    "dnsmos_sep_melband_roformer_vocal": {
+      "SIG": 3.737,
+      "BAK": 3.019,
+      "OVRL": 2.891
+    },
+    "dnsmos_enh_melband_roformer_vocal": {
+      "SIG": 3.841,
+      "BAK": 3.841,
+      "OVRL": 3.407
+    },
+    "rtf_sep_melband_roformer_vocal": null,
+    "rtf_enh_melband_roformer_vocal": 0.0607
+  },
+  {
+    "file": "beyondlimits_ngalevi__12Te-lBaRHo",
+    "snr_raw": 20.9,
+    "dnsmos_raw": {
+      "SIG": 3.741,
+      "BAK": 2.487,
+      "OVRL": 2.681
+    },
+    "dnsmos_sep_bs_roformer_1297": {
+      "SIG": 4.054,
+      "BAK": 4.473,
+      "OVRL": 3.874
+    },
+    "dnsmos_enh_bs_roformer_1297": {
+      "SIG": 4.091,
+      "BAK": 4.517,
+      "OVRL": 3.917
+    },
+    "rtf_sep_bs_roformer_1297": null,
+    "rtf_enh_bs_roformer_1297": 0.0599,
+    "dnsmos_sep_melband_roformer_vocal": {
+      "SIG": 4.058,
+      "BAK": 4.493,
+      "OVRL": 3.888
+    },
+    "dnsmos_enh_melband_roformer_vocal": {
+      "SIG": 4.108,
+      "BAK": 4.536,
+      "OVRL": 3.94
+    },
+    "rtf_sep_melband_roformer_vocal": null,
+    "rtf_enh_melband_roformer_vocal": 0.0603
+  },
+  {
+    "file": "beyondlimits_ngalevi__1PfsTwcy-vY",
+    "snr_raw": 19.9,
+    "dnsmos_raw": {
+      "SIG": 4.022,
+      "BAK": 2.331,
+      "OVRL": 2.727
+    },
+    "dnsmos_sep_bs_roformer_1297": {
+      "SIG": 3.944,
+      "BAK": 4.3,
+      "OVRL": 3.721
+    },
+    "dnsmos_enh_bs_roformer_1297": {
+      "SIG": 4.005,
+      "BAK": 4.422,
+      "OVRL": 3.821
+    },
+    "rtf_sep_bs_roformer_1297": null,
+    "rtf_enh_bs_roformer_1297": 0.06,
+    "dnsmos_sep_melband_roformer_vocal": {
+      "SIG": 3.96,
+      "BAK": 4.352,
+      "OVRL": 3.753
+    },
+    "dnsmos_enh_melband_roformer_vocal": {
+      "SIG": 3.99,
+      "BAK": 4.422,
+      "OVRL": 3.804
+    },
+    "rtf_sep_melband_roformer_vocal": null,
+    "rtf_enh_melband_roformer_vocal": 0.0603
+  },
+  {
+    "file": "beyondlimits_ngalevi__3wVLylGgVag",
+    "snr_raw": 22.2,
+    "dnsmos_raw": {
+      "SIG": 3.499,
+      "BAK": 2.062,
+      "OVRL": 2.375
+    },
+    "dnsmos_sep_bs_roformer_1297": {
+      "SIG": 4.051,
+      "BAK": 4.382,
+      "OVRL": 3.818
+    },
+    "dnsmos_enh_bs_roformer_1297": {
+      "SIG": 4.046,
+      "BAK": 4.413,
+      "OVRL": 3.825
+    },
+    "rtf_sep_bs_roformer_1297": null,
+    "rtf_enh_bs_roformer_1297": 0.0598,
+    "dnsmos_sep_melband_roformer_vocal": {
+      "SIG": 4.037,
+      "BAK": 4.37,
+      "OVRL": 3.803
+    },
+    "dnsmos_enh_melband_roformer_vocal": {
+      "SIG": 4.071,
+      "BAK": 4.44,
+      "OVRL": 3.857
+    },
+    "rtf_sep_melband_roformer_vocal": null,
+    "rtf_enh_melband_roformer_vocal": 0.0597
+  }
+]

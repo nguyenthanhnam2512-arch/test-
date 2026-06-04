@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Dataset & media (quá lớn)
+*.webm
+*.zip
+audio.zip
+
+# Model checkpoints (tự tải khi chạy)
+*.ckpt
+*.pth
+
+# Generated audio outputs
+**/audio_raw_wav/
+**/audio_separated/
+**/audio_enhanced/
+*.wav
+
+# Model cache
+**/models/*.ckpt
+**/models/download_checks.json

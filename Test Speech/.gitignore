@@ -1,0 +1,9 @@
+# Dataset gốc — tải riêng, không đưa lên Git
+audio.zip
+
+# Outputs thực nghiệm
+separation_experiment/audio_raw_wav/
+separation_experiment/audio_separated/
+separation_experiment/audio_enhanced/
+separation_experiment/models/*.ckpt
+separation_experiment/models/download_checks.json
