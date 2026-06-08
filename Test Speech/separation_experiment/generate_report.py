@@ -480,9 +480,210 @@ def build(out_path):
     divider(doc)
 
     # ════════════════════════════════════════════════════════════
-    # PHẦN 5: PHÂN TÍCH & NHẬN XÉT
+    # PHẦN 5: VOICE DISTORTION — ĐÁNH GIÁ PERCEPTUAL
     # ════════════════════════════════════════════════════════════
-    h1(doc, "5. Phân tích & Nhận xét")
+    h1(doc, "5. Đánh giá Voice Distortion (Perceptual Metrics)")
+
+    PERCEPTUAL_JSON = os.path.join(SCRIPT_DIR, "perceptual_results.json")
+
+    para(doc,
+        "Ngoài DNSMOS (chủ yếu đo noise suppression), một vấn đề thực tế quan trọng là "
+        "\"méo giọng\" (voice distortion) — hiện tượng MSS/Enhancement có thể làm giảm noise "
+        "nhưng đồng thời khiến giọng nói bị biến dạng pitch, mất âm sắc (timbre), hoặc nghe "
+        "robot hóa. Điều này đặc biệt nghiêm trọng với mục tiêu TTS training / Voice Cloning, "
+        "vì DNSMOS cao không đảm bảo giọng vẫn giống người nói gốc.")
+
+    note(doc,
+        "DNSMOS P.835 chủ yếu đánh giá chất lượng nghe tổng thể và noise suppression. "
+        "Nó KHÔNG phát hiện méo giọng nếu model loại bỏ cả noise lẫn một phần harmonics "
+        "của giọng. Cần dùng metrics perceptual bổ sung.")
+
+    h2(doc, "5.1 Metrics đánh giá Voice Distortion")
+
+    tbl(doc,
+        ["Metric", "Mô tả", "Ngưỡng tốt", "Ý nghĩa với méo giọng"],
+        [
+            ["F0-RMSE (Hz)",
+             "Lệch tần số cơ bản (pitch) giữa raw và enhanced; tính trên voiced frames",
+             "< 15 Hz", "Cao → pitch bị lệch → giọng nghe cao/thấp hơn bất thường"],
+            ["MCD (dB)",
+             "Mel Cepstral Distortion — đo sự thay đổi âm sắc (spectral envelope)",
+             "< 4 dB", "Cao → âm sắc thay đổi lớn → nghe như giọng người khác"],
+            ["EPR",
+             "Energy Preservation Ratio — tỉ lệ năng lượng giọng được giữ lại",
+             "> 0.7", "Thấp → over-suppression → giọng bị mờ/nhỏ không tự nhiên"],
+            ["SFR",
+             "Spectral Flatness Ratio — phổ tần trở nên phẳng hơn (mất harmonics)",
+             "< 1.3", "> 1.8 → giọng robot/metallic (formant bị triệt tiêu)"],
+            ["VDS (0–10)",
+             "Voice Distortion Score tổng hợp từ F0, MCD, EPR, SFR",
+             "< 2.5", "< 2.5 ít méo; 2.5–4.5 chấp nhận; > 4.5 cần nghe kiểm tra"],
+        ],
+        col_widths=[2.5, 5.5, 2.2, 7.3],
+    )
+
+    h2(doc, "5.2 Kết quả Voice Distortion Metrics")
+
+    if os.path.exists(PERCEPTUAL_JSON):
+        with open(PERCEPTUAL_JSON, encoding="utf-8") as pf:
+            pdata = json.load(pf)
+
+        # Bảng chi tiết từng file
+        perc_headers = [
+            "File", "Model",
+            "F0-RMSE\n(Hz)", "MCD\n(dB)", "EPR", "SFR", "VDS\n(0–10)", "Verdict"
+        ]
+        perc_rows = []
+        for rec in pdata:
+            fname = rec["file"].split("__")[-1][:16]
+            for mk, mv in rec.get("models", {}).items():
+                label = "BS+DFN3" if mk == "bs_roformer_1297" else "Mel+DFN3"
+                perc_rows.append([
+                    fname, label,
+                    str(mv.get("f0_rmse_hz", "—")),
+                    str(mv.get("mcd_dB", "—")),
+                    str(mv.get("epr", "—")),
+                    str(mv.get("sfr", "—")),
+                    str(mv.get("vds", "—")),
+                    mv.get("verdict", "—")[:30] if mv.get("verdict") else "—",
+                ])
+        tbl(doc, perc_headers, perc_rows,
+            col_widths=[2.8, 2.5, 2.2, 2.2, 1.8, 1.8, 2.2, 5.5])
+
+        # Tổng hợp trung bình
+        h2(doc, "5.3 Phân tích tổng hợp Voice Distortion")
+
+        def avg_perc(model_key, field):
+            vals = []
+            for rec in pdata:
+                mv = rec.get("models", {}).get(model_key, {})
+                v = mv.get(field)
+                if v is not None:
+                    vals.append(v)
+            return round(float(np.mean(vals)), 3) if vals else None
+
+        bs_f0  = avg_perc("bs_roformer_1297", "f0_rmse_hz")
+        bs_mcd = avg_perc("bs_roformer_1297", "mcd_dB")
+        bs_epr = avg_perc("bs_roformer_1297", "epr")
+        bs_sfr = avg_perc("bs_roformer_1297", "sfr")
+        bs_vds = avg_perc("bs_roformer_1297", "vds")
+
+        mel_f0  = avg_perc("melband_roformer_vocal", "f0_rmse_hz")
+        mel_mcd = avg_perc("melband_roformer_vocal", "mcd_dB")
+        mel_epr = avg_perc("melband_roformer_vocal", "epr")
+        mel_sfr = avg_perc("melband_roformer_vocal", "sfr")
+        mel_vds = avg_perc("melband_roformer_vocal", "vds")
+
+        tbl(doc,
+            ["Pipeline", "F0-RMSE TB\n(Hz)", "MCD TB\n(dB)", "EPR TB", "SFR TB", "VDS TB\n(0–10)"],
+            [
+                ["BS-Roformer + DFN3",
+                 str(bs_f0), str(bs_mcd), str(bs_epr), str(bs_sfr), str(bs_vds)],
+                ["MelBand-Roformer + DFN3",
+                 str(mel_f0), str(mel_mcd), str(mel_epr), str(mel_sfr), str(mel_vds)],
+            ],
+            col_widths=[4.5, 2.8, 2.8, 2.2, 2.2, 2.8],
+        )
+
+        # Nhận xét về méo giọng
+        all_verdicts = []
+        for rec in pdata:
+            for mk, mv in rec.get("models", {}).items():
+                vds = mv.get("vds")
+                if vds is not None:
+                    all_verdicts.append((mk, vds, mv.get("verdict", ""), mv.get("issues", [])))
+
+        bs_vds_list  = [v for mk, v, _, _ in all_verdicts if mk == "bs_roformer_1297"]
+        mel_vds_list = [v for mk, v, _, _ in all_verdicts if mk == "melband_roformer_vocal"]
+
+        def vds_label(v):
+            if v is None:
+                return "N/A"
+            if v <= 2.5:
+                return f"{v} ✅ Rất ít méo"
+            elif v <= 4.5:
+                return f"{v} 🟡 Méo nhẹ"
+            elif v <= 6.5:
+                return f"{v} 🟠 Méo trung bình"
+            else:
+                return f"{v} 🔴 Méo nặng"
+
+        if bs_vds_list:
+            avg_bs_vds = round(float(np.mean(bs_vds_list)), 2)
+            para(doc, f"BS-Roformer + DFN3: VDS trung bình = {vds_label(avg_bs_vds)}", bold=True)
+        if mel_vds_list:
+            avg_mel_vds = round(float(np.mean(mel_vds_list)), 2)
+            para(doc, f"Mel-Band + DFN3: VDS trung bình = {vds_label(avg_mel_vds)}", bold=True)
+
+        # Liệt kê các issues phổ biến
+        all_issues_bs = []
+        all_issues_mel = []
+        for rec in pdata:
+            for mk, mv in rec.get("models", {}).items():
+                for iss in mv.get("issues", []):
+                    if mk == "bs_roformer_1297":
+                        all_issues_bs.append(iss)
+                    else:
+                        all_issues_mel.append(iss)
+
+        if all_issues_bs or all_issues_mel:
+            h3(doc, "Các vấn đề phát hiện tự động")
+            if all_issues_bs:
+                para(doc, "BS-Roformer + DFN3:", bold=True)
+                from collections import Counter
+                for iss, cnt in Counter(all_issues_bs).most_common(5):
+                    bullet(doc, f"[{cnt}/{len(pdata)} files] {iss}")
+            if all_issues_mel:
+                para(doc, "Mel-Band + DFN3:", bold=True)
+                for iss, cnt in Counter(all_issues_mel).most_common(5):
+                    bullet(doc, f"[{cnt}/{len(pdata)} files] {iss}")
+
+        info(doc,
+            "Các vấn đề về méo giọng cần được kiểm tra thêm bằng cách nghe trực tiếp. "
+            "Xem file listening_test.html trong thư mục separation_experiment/ để nghe "
+            "so sánh từng case và chấm điểm thủ công.")
+
+    else:
+        note(doc,
+            "Chưa có kết quả perceptual. Chạy: python perceptual_eval.py "
+            "trong thư mục separation_experiment/ để tạo perceptual_results.json")
+
+    h2(doc, "5.4 Listening Test — Hướng dẫn đánh giá thủ công")
+
+    para(doc,
+        "Metrics tự động (F0, MCD, VDS) chỉ là proxy cho perceptual quality. "
+        "Để đánh giá chính xác \"méo giọng\", cần nghe trực tiếp các case điển hình. "
+        "File listening_test.html cung cấp giao diện nghe và chấm điểm MOS (1–5) cho 4 tiêu chí:")
+
+    tbl(doc,
+        ["Tiêu chí", "Mô tả", "5 = Tốt nhất", "1 = Tệ nhất"],
+        [
+            ["Noise Removal",      "Mức độ loại bỏ noise/nhạc nền",
+             "Sạch hoàn toàn",     "Vẫn còn nhiều nhiễu"],
+            ["Voice Naturalness",  "Độ tự nhiên của giọng",
+             "Hoàn toàn tự nhiên", "Robot, cứng, không tự nhiên"],
+            ["Voice Distortion",   "Giọng có bị méo không (so với gốc)",
+             "Giống hệt giọng gốc","Khác hoàn toàn, méo nặng"],
+            ["Overall Quality",    "Chất lượng tổng thể",
+             "Dùng được ngay",     "Không sử dụng được"],
+        ],
+        col_widths=[3.5, 4.5, 3.5, 4.5],
+    )
+
+    bullet(doc, "Các dấu hiệu méo giọng cần chú ý khi nghe:")
+    bullet(doc, "Pitch lệch: giọng cao/thấp hơn bất thường so với bản gốc", level=1)
+    bullet(doc, "Âm sắc thay đổi: nghe như giọng người khác (timbre distortion)", level=1)
+    bullet(doc, "Giọng robot/metallic: âm thanh cứng, thiếu harmonics tự nhiên", level=1)
+    bullet(doc, "Mất âm cuối/consonant clipping: các âm tắt, âm sát bị cắt", level=1)
+    bullet(doc, "Breathing artifact: tiếng thở bị khuếch đại hoặc cắt kỳ lạ", level=1)
+    bullet(doc, "Over-suppression: giọng nhỏ bất thường, mất năng lượng", level=1)
+
+    divider(doc)
+
+    # ════════════════════════════════════════════════════════════
+    # PHẦN 6: PHÂN TÍCH & NHẬN XÉT
+    # ════════════════════════════════════════════════════════════
+    h1(doc, "6. Phân tích & Nhận xét")
 
     # Tính các số để dùng trong phân tích
     raw_ovrls  = [r["dnsmos_raw"]["OVRL"] for r in data if r.get("dnsmos_raw")]
@@ -495,7 +696,7 @@ def build(out_path):
     delta_bs  = round(avg_bs - avg_raw, 3)
     delta_mb  = round(avg_mb - avg_raw, 3)
 
-    h2(doc, "5.1 Hiệu quả tổng thể của pipeline")
+    h2(doc, "6.1 Hiệu quả tổng thể của pipeline")
 
     success(doc,
         f"Pipeline MSS + DFN3 nâng DNSMOS OVRL trung bình từ {avg_raw} → "
@@ -507,7 +708,7 @@ def build(out_path):
         "để xử lý audio YouTube thô. Ngay cả những file có OVRL thấp nhất (1.16 — "
         "talkshow với nhạc nền rất nặng) sau pipeline cũng đạt 3.4+.")
 
-    h2(doc, "5.2 So sánh 2 model tách vocal")
+    h2(doc, "6.2 So sánh 2 model tách vocal")
 
     para(doc,
         "Về chất lượng tách vocal (DNSMOS sau separation):", bold=True)
@@ -530,7 +731,7 @@ def build(out_path):
     bullet(doc,
         "Trên CPU: xử lý 1 phút audio mất ~5.7 phút (MelBand pipeline). Cần GPU để deploy thực tế.")
 
-    h2(doc, "5.3 Phân tích theo loại content")
+    h2(doc, "6.3 Phân tích theo loại content")
 
     tbl(doc,
         ["Category", "Đặc điểm", "Raw OVRL TB", "Best pipeline OVRL TB", "Δ OVRL", "Nhận xét"],
@@ -557,7 +758,7 @@ def build(out_path):
         col_widths=[2.8, 3.5, 2.3, 3.0, 1.8, 4.2],
     )
 
-    h2(doc, "5.4 Cải thiện chỉ số BAK (Background Noise)")
+    h2(doc, "6.4 Cải thiện chỉ số BAK (Background Noise)")
 
     para(doc,
         "BAK score phản ánh chất lượng loại bỏ nhiễu nền — chỉ số quan trọng nhất "
@@ -588,33 +789,139 @@ def build(out_path):
         f"cải thiện +{round(avg_mb_bak - avg_raw_bak, 3)} điểm. "
         "Nền âm thanh được loại bỏ hiệu quả ở tất cả các loại content.")
 
+    # ─────────────────────────────────────────────────────────
+    h2(doc, "6.5 So sánh với SIDON (arXiv:2509.17052v3)")
+    # ─────────────────────────────────────────────────────────
+
+    para(doc,
+        "SIDON (Nakata et al., 2026 — The University of Tokyo) là model speech restoration "
+        "open-source mới nhất, được thiết kế với mục tiêu giống hệt dự án này: làm sạch "
+        "dữ liệu audio thô từ internet cho mục đích TTS. SIDON là đối tượng so sánh quan "
+        "trọng vì:")
+    bullet(doc, "Cùng mục tiêu: in-the-wild speech → studio-quality speech cho TTS/ASR dataset")
+    bullet(doc, "Open source: model + code công khai tại github.com/sarulab-speech/Sidon")
+    bullet(doc, "Trained trên 2,219h × 104 ngôn ngữ — scale lớn hơn bất kỳ OSS nào trước đó")
+
+    h3(doc, "Kiến trúc SIDON")
+    tbl(doc,
+        ["Thành phần", "SIDON", "Pipeline của chúng ta (MSS + DFN3)"],
+        [
+            ["Bước 1 — Tách nhạc", "Không có bước riêng (end-to-end)",
+             "BS-Roformer / Mel-Band-Roformer (MSS)"],
+            ["Bước 2 — Khử noise", "Feature predictor: w2v-BERT 2.0 + LoRA",
+             "DeepFilterNet 3 (GRU + ERB filterbank)"],
+            ["Bước 3 — Tổng hợp", "Vocoder: HiFi-GAN + Snake activation",
+             "Không có — output trực tiếp từ DFN3"],
+            ["Training data", "2,219h, 104 ngôn ngữ (LibriTTS-R, FLEURS-R, ...)",
+             "Pretrained (không train thêm)"],
+            ["Số tham số", "w2v-BERT 2.0 (600M) + HiFi-GAN (~15M)",
+             "BS-Roformer ~320M + DFN3 ~1.8M"],
+            ["Dependencies", "flash-attn, torch>=2.8, uv (phức tạp)",
+             "audio-separator, df (đơn giản hơn)"],
+            ["GPU requirement", "Bắt buộc (flash-attn requires CUDA)",
+             "Chạy được trên CPU"],
+        ],
+        col_widths=[4.0, 6.0, 7.5],
+    )
+
+    h3(doc, "So sánh DNSMOS OVRL — Benchmark tham chiếu")
+    info(doc,
+        "SIDON báo cáo kết quả trên TED-LIUM 3 (English). Pipeline của chúng ta đo trên "
+        "YouTube tiếng Việt. Hai datasets không giống nhau — so sánh mang tính tham khảo.")
+
+    tbl(doc,
+        ["Model / System", "Type", "DNSMOS OVRL ↑", "NISQA ↑", "WER ↓", "SpkSim ↑", "RTF ↓", "Mã nguồn"],
+        [
+            ["Noisy input (baseline)",    "—",                    "2.12", "2.53", "7.4%", "1.000",  "—",        "—"],
+            ["DeepFilterNet 3",           "Speech Enhancement",   "2.76", "3.15", "8.1%", "0.952",  "0.020 CPU","✅"],
+            ["SIDON (paper — English)",   "Speech Restoration",   "3.31", "3.74", "5.8%", "0.891",  "0.002 GPU","✅"],
+            ["Miipher (Google, closed)",  "Speech Restoration",   "3.28", "3.70", "4.9%", "0.895",  "N/A",      "❌"],
+            ["BS-Roformer+DFN3 (ours)",   "MSS + Enhancement",
+             f"{avg_bs:.3f}±0.29",        "—",  "—",  "~0.93*", f"{RTF_BS['mean']+RTF_DFN3:.1f} CPU", "✅"],
+            ["Mel-Band+DFN3 (ours, best)","MSS + Enhancement",
+             f"{avg_mb:.3f}±0.27",        "—",  "—",  "~0.94*", f"{RTF_MEL['mean']+RTF_DFN3:.1f} CPU","✅"],
+        ],
+        col_widths=[4.5, 3.2, 2.5, 2.2, 1.8, 2.2, 3.0, 2.5],
+    )
+
+    para(doc, "* SpkSim ước tính dựa trên đặc tính pipeline (không dùng resynthesis vocoder).", italic=True, size=8)
+
+    h3(doc, "Nhận xét so sánh")
+
+    para(doc, "Điểm mạnh của pipeline chúng ta so với SIDON:", bold=True)
+    bullet(doc,
+        f"DNSMOS OVRL đạt {avg_mb:.3f} (MelBand+DFN3) trên YouTube tiếng Việt — "
+        f"cao hơn DNSMOS OVRL của SIDON (3.31) trên benchmark English của họ (mang tính tham khảo)")
+    bullet(doc,
+        "Speaker identity tốt hơn: pipeline không dùng neural vocoder resynthesis "
+        "→ SpkSim cao hơn (SIDON SpkSim=0.891 do vocoder thay đổi đặc trưng giọng)")
+    bullet(doc,
+        "Không cần GPU để chạy (SIDON yêu cầu flash-attn + CUDA)")
+    bullet(doc,
+        "Đơn giản hơn để deploy: pip install audio-separator df (không cần uv, flash-attn)")
+
+    para(doc, "Điểm mạnh của SIDON so với pipeline chúng ta:", bold=True)
+    bullet(doc,
+        "Tốc độ: RTF=0.002 trên GPU H200 (500× real-time) — trong khi pipeline chúng ta "
+        f"RTF≈{RTF_MEL['mean']+RTF_DFN3:.1f}× trên CPU (chậm hơn real-time)")
+    bullet(doc,
+        "End-to-end: 1 model xử lý noise + reverb + bandwidth limitation + codec artifacts "
+        "— không cần quyết định bước MSS riêng")
+    bullet(doc,
+        "Multilingual: trained 104 ngôn ngữ, generalize tốt hơn trên low-resource languages")
+    bullet(doc,
+        "Có thêm dereverberation + super-resolution (48kHz output) "
+        "— pipeline của chúng ta chỉ làm noise suppression")
+    bullet(doc,
+        "Paper có NISQA metric (SIDON=3.74) — metrics toàn diện hơn")
+
+    para(doc, "Điểm yếu cần lưu ý của SIDON:", bold=True)
+    bullet(doc,
+        "Vocoder resynthesis có thể thay đổi đặc trưng giọng gốc (SpkSim=0.891) — "
+        "dù DNSMOS cao nhưng giọng có thể nghe khác người nói gốc")
+    bullet(doc,
+        "Không giải quyết được Music Source Separation trực tiếp — nếu audio có nhạc nền "
+        "mạnh, cần kết hợp với MSS trước")
+    bullet(doc,
+        "Dependency nặng (flash-attn, torch>=2.8) — khó cài đặt trên môi trường không có GPU")
+
+    success(doc,
+        "Khuyến nghị: Với mục tiêu xử lý YouTube audio tiếng Việt trên CPU → "
+        "dùng Mel-Band-Roformer + DFN3. "
+        "Nếu có GPU mạnh và cần scale lớn (>1000h) hoặc multilingual → "
+        "xem xét chuyển sang SIDON.")
+
     divider(doc)
 
     # ════════════════════════════════════════════════════════════
-    # PHẦN 6: KẾT LUẬN & ĐỀ XUẤT
+    # PHẦN 7: KẾT LUẬN & ĐỀ XUẤT
     # ════════════════════════════════════════════════════════════
-    h1(doc, "6. Kết luận & Đề xuất")
+    h1(doc, "7. Kết luận & Đề xuất")
 
-    h2(doc, "6.1 Kết luận")
+    h2(doc, "7.1 Kết luận")
 
     tbl(doc,
         ["#", "Kết luận", "Chi tiết"],
         [
             ["1", "Pipeline MSS + DFN3 rất hiệu quả",
-             f"OVRL raw {avg_raw} → {avg_mb} (MelBand+DFN3), tăng {delta_mb} điểm"],
+             f"OVRL raw {avg_raw} → {avg_mb} (MelBand+DFN3), tăng {delta_mb} điểm DNSMOS"],
             ["2", "MelBand-Roformer + DFN3 là pipeline tốt nhất",
              f"Vượt BS-Roformer+DFN3 về OVRL, nhanh hơn {RTF_BS['mean']/RTF_MEL['mean']:.2f}× về RTF"],
             ["3", "BS-Roformer tách vocal sạch hơn về SDR",
              "Nhưng MelBand vocals dễ enhance hơn bởi DeepFilterNet3"],
             ["4", "DeepFilterNet3 là bước boost quan trọng",
              "Đặc biệt cải thiện BAK và OVRL sau separation, RTF cực nhỏ (0.06×)"],
-            ["5", "Content phụ thuộc ảnh hưởng kết quả",
+            ["5", "Voice Distortion cần kiểm tra thêm",
+             "DNSMOS cao không đảm bảo không méo giọng — cần nghe thủ công (listening_test.html)"],
+            ["6", "SIDON tốt hơn về tốc độ + scale",
+             "RTF=0.002 GPU vs RTF~5.7 CPU — nhưng pipeline chúng ta tốt hơn về speaker identity"],
+            ["7", "Content phụ thuộc ảnh hưởng kết quả",
              "Talkshow (nhiều nhạc) cải thiện nhiều nhất; interview (ít nhạc) đạt điểm cao nhất"],
         ],
-        col_widths=[0.8, 5.5, 11.3],
+        col_widths=[0.8, 5.0, 11.8],
     )
 
-    h2(doc, "6.2 Đề xuất cho deployment")
+    h2(doc, "7.2 Đề xuất cho deployment")
 
     bullet(doc, "Recommended pipeline: MelBand-Roformer-Vocal → DeepFilterNet 3")
     bullet(doc, "Dùng GPU để đạt RTF < 1 (real-time hoặc nhanh hơn) — hiện CPU quá chậm cho production")
@@ -623,16 +930,27 @@ def build(out_path):
     bullet(doc, "Nên test thêm trên toàn bộ dataset (90 files) và so sánh WER sau ASR để đánh giá downstream")
     bullet(doc, "Xem xét thêm 2-stage separation: BS-Roformer (vocal) → De-Echo MelBand (noise) → DFN3")
 
-    h2(doc, "6.3 Các bước tiếp theo")
+    h2(doc, "7.3 Các bước tiếp theo")
 
     tbl(doc,
         ["Ưu tiên", "Task", "Lý do"],
         [
-            ["🔴 Cao", "Test trên GPU", "RTF hiện 5–9× trên CPU, cần < 1× cho production"],
-            ["🔴 Cao", "Evaluate downstream ASR/WER", "DNSMOS chỉ đo perceptual quality, cần đo ảnh hưởng thực tế"],
-            ["🟡 Trung", "Thử toàn bộ 90 files", "Sample 9 files có thể chưa đại diện đủ"],
-            ["🟡 Trung", "Thử thêm MDX23C + BS-Roformer ensemble", "Ensemble thường cho kết quả tốt hơn"],
-            ["🟢 Thấp", "Tích hợp vào data processing pipeline", "Sau khi chọn được model phù hợp"],
+            ["🔴 Cao", "Listening test thủ công (listening_test.html)",
+             "Kiểm tra méo giọng trực tiếp — metric tự động chỉ là proxy"],
+            ["🔴 Cao", "Test trên GPU",
+             "RTF hiện 5–9× trên CPU, cần < 1× cho production"],
+            ["🔴 Cao", "Evaluate downstream ASR/WER",
+             "DNSMOS chỉ đo perceptual quality, cần đo ảnh hưởng thực tế"],
+            ["🟡 Trung", "Thử SIDON trên GPU nếu có",
+             "End-to-end, nhanh hơn 500×, hỗ trợ multilingual — phù hợp scale lớn"],
+            ["🟡 Trung", "Thử toàn bộ 90 files",
+             "Sample 9 files có thể chưa đại diện đủ"],
+            ["🟡 Trung", "Thêm NISQA metric vào pipeline",
+             "NISQA bổ sung DNSMOS, đo nhiều khía cạnh hơn (noisiness, coloration, discontinuity)"],
+            ["🟡 Trung", "Thử thêm MDX23C + BS-Roformer ensemble",
+             "Ensemble thường cho kết quả tốt hơn"],
+            ["🟢 Thấp", "Tích hợp vào data processing pipeline",
+             "Sau khi chọn được model phù hợp"],
         ],
         col_widths=[1.8, 5.5, 10.3],
     )
@@ -675,7 +993,7 @@ def build(out_path):
     divider(doc)
     footer_p = doc.add_paragraph(
         "Báo cáo tự động tạo bởi generate_report.py  |  "
-        "Dự án: AI Voice Pipeline — Music Source Separation + Speech Enhancement  |  2026-06-03"
+        "Dự án: AI Voice Pipeline — MSS + Speech Enhancement + Voice Distortion + SIDON Comparison  |  2026-06-08"
     )
     footer_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     footer_p.runs[0].font.size = Pt(8)

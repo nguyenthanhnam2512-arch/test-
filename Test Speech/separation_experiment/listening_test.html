@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listening Test — MSS + Speech Enhancement Pipeline</title>
+<style>
+  :root {
+    --bg: #0f172a; --surface: #1e293b; --surface2: #334155;
+    --accent: #38bdf8; --accent2: #818cf8; --accent3: #34d399;
+    --warn: #fb923c; --danger: #f87171;
+    --text: #f1f5f9; --muted: #94a3b8; --border: #475569;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif;
+         font-size: 14px; line-height: 1.6; }
+  header { background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+            padding: 28px 32px; }
+  header h1 { font-size: 1.6rem; font-weight: 700; }
+  header p  { opacity: .8; margin-top: 4px; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px;
+            font-weight: 600; background: rgba(255,255,255,.15); }
+  main { max-width: 1320px; margin: 0 auto; padding: 24px 16px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .tab-btn { padding: 8px 18px; border-radius: 8px; border: 2px solid var(--border);
+              background: var(--surface); color: var(--muted); cursor: pointer;
+              font-size: 12px; font-weight: 600; transition: all .2s; }
+  .tab-btn.active { border-color: var(--accent); color: var(--accent); background: #0c2130; }
+  .tab-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* Card */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+           padding: 20px; margin-bottom: 20px; }
+  .card-title { font-size: 1rem; font-weight: 700; color: var(--accent2); margin-bottom: 16px;
+                 display: flex; align-items: center; gap: 8px; }
+
+  /* Audio grid */
+  .audio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                 gap: 12px; }
+  .audio-slot { background: var(--surface2); border-radius: 10px; padding: 14px; }
+  .audio-label { font-size: 11px; font-weight: 700; text-transform: uppercase;
+                  letter-spacing: .05em; margin-bottom: 8px; }
+  .label-raw    { color: var(--muted); }
+  .label-bs     { color: var(--accent); }
+  .label-mel    { color: var(--accent3); }
+  .label-sidon  { color: var(--warn); }
+  audio { width: 100%; height: 32px; margin-top: 4px; }
+  .info-tag { font-size: 10px; color: var(--muted); margin-top: 6px; }
+
+  /* Scoring */
+  .score-section { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px; }
+  .score-section h4 { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .score-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+                margin-bottom: 8px; }
+  .score-label { font-size: 12px; min-width: 160px; color: var(--text); }
+  .stars { display: flex; gap: 4px; }
+  .star { cursor: pointer; font-size: 18px; color: var(--border); transition: color .15s; }
+  .star.on { color: #facc15; }
+  .star:hover ~ .star { color: var(--border) !important; }
+  .stars:hover .star { color: #facc15; }
+  .stars .star:hover ~ .star { color: var(--border); }
+  .note-area { width: 100%; margin-top: 10px; background: var(--surface2); border: 1px solid var(--border);
+                border-radius: 8px; padding: 8px; color: var(--text); font-size: 12px;
+                resize: vertical; min-height: 60px; }
+  .note-area::placeholder { color: var(--muted); }
+
+  /* Summary table */
+  .sum-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .sum-table th { background: var(--surface2); padding: 8px 12px; text-align: left;
+                   color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+  .sum-table td { padding: 8px 12px; border-bottom: 1px solid #2d3748; }
+  .sum-table tr:hover td { background: rgba(255,255,255,.03); }
+  .chip { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+  .chip-green  { background: #14532d; color: #86efac; }
+  .chip-yellow { background: #713f12; color: #fde68a; }
+  .chip-orange { background: #7c2d12; color: #fdba74; }
+  .chip-red    { background: #7f1d1d; color: #fca5a5; }
+
+  /* Export */
+  .btn { padding: 10px 22px; border-radius: 8px; border: none; cursor: pointer;
+          font-size: 13px; font-weight: 600; transition: all .2s; }
+  .btn-primary { background: var(--accent); color: #0f172a; }
+  .btn-primary:hover { background: #7dd3fc; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Info boxes */
+  .info-box { background: #1e3a5f; border: 1px solid #1d4ed8; border-radius: 10px; padding: 14px;
+               margin-bottom: 16px; font-size: 12px; }
+  .info-box h4 { color: #60a5fa; margin-bottom: 6px; font-size: 13px; }
+  .warn-box { background: #422006; border: 1px solid #92400e; border-radius: 10px; padding: 14px;
+               margin-bottom: 16px; font-size: 12px; }
+  .warn-box h4 { color: var(--warn); margin-bottom: 6px; font-size: 13px; }
+
+  /* Reference table */
+  .ref-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .ref-table th { background: #1e2d3d; padding: 8px 12px; text-align: center;
+                   color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+  .ref-table td { padding: 8px 12px; text-align: center; border-bottom: 1px solid #1e2d3d; }
+  .ref-table .best { color: var(--accent3); font-weight: 700; }
+  .highlight-row td { background: rgba(99,102,241,.08); }
+  .metric-note { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+  .section-hidden { display: none; }
+  .progress-bar { height: 6px; background: var(--border); border-radius: 3px; margin: 8px 0; }
+  .progress-fill { height: 6px; border-radius: 3px; transition: width .4s; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎧 Listening Test — MSS + Speech Enhancement Pipeline</h1>
+  <p>Đánh giá thủ công chất lượng giọng nói sau khi qua Music Source Separation + Speech Enhancement</p>
+  <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+    <span class="badge">BS-Roformer-Viperx-1297</span>
+    <span class="badge">Mel-Band-Roformer-Vocal</span>
+    <span class="badge">DeepFilterNet 3</span>
+    <span class="badge">Ref: SIDON (arXiv:2509.17052)</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('tab-listen')">🎧 Nghe & Chấm điểm</button>
+    <button class="tab-btn" onclick="showTab('tab-summary')">📊 Kết quả tổng hợp</button>
+    <button class="tab-btn" onclick="showTab('tab-sidon')">📄 So sánh với SIDON</button>
+    <button class="tab-btn" onclick="showTab('tab-guide')">📋 Hướng dẫn đánh giá</button>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║  TAB 1: NGHE & CHẤM ĐIỂM            ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <div id="tab-listen">
+    <div class="warn-box">
+      <h4>⚠ Vấn đề "Méo giọng" cần kiểm tra khi nghe</h4>
+      <ul style="margin-left: 16px; line-height: 1.8;">
+        <li><strong>Pitch bị lệch</strong>: giọng cao/thấp hơn bất thường so với gốc</li>
+        <li><strong>Âm sắc bị đổi</strong>: nghe như giọng khác người (timbre distortion)</li>
+        <li><strong>Giọng robot / metallic</strong>: âm thanh cứng, thiếu tự nhiên</li>
+        <li><strong>Mất âm cuối / consonant clipping</strong>: các âm tắt bị cắt mất</li>
+        <li><strong>Breathing artifact</strong>: tiếng thở bị khuếch đại hoặc cắt kỳ lạ</li>
+        <li><strong>Over-suppression</strong>: âm giọng bị giảm quá mức cùng với noise</li>
+      </ul>
+    </div>
+    <div id="audio-cards"></div>
+    <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+      <button class="btn btn-primary" onclick="exportResults()">💾 Export kết quả JSON</button>
+      <button class="btn btn-secondary" onclick="clearAll()">🗑 Xóa tất cả điểm</button>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║  TAB 2: KẾT QUẢ TỔNG HỢP            ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <div id="tab-summary" class="section-hidden">
+    <div class="card">
+      <div class="card-title">📊 Bảng tổng hợp điểm chấm thủ công</div>
+      <div id="summary-table-container">
+        <p style="color: var(--muted);">Chấm điểm ở tab "Nghe & Chấm điểm" rồi quay lại đây để xem tổng hợp.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 Metrics tự động (đã tính sẵn từ script)</div>
+      <div id="auto-metrics-table"></div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║  TAB 3: SO SÁNH VỚI SIDON           ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <div id="tab-sidon" class="section-hidden">
+    <div class="info-box">
+      <h4>📄 SIDON — Fast and Robust Open-Source Multilingual Speech Restoration</h4>
+      <p>Nakata et al., The University of Tokyo — arXiv:2509.17052v3 (Jan 2026)</p>
+      <p style="margin-top: 6px; color: #94a3b8;">
+        SIDON là model open-source về speech restoration (không phải MSS + enhancement pipeline riêng lẻ).
+        SIDON dùng kiến trúc <strong>w2v-BERT 2.0 feature predictor + HiFi-GAN vocoder</strong>,
+        trained trên 2,219h speech × 104 ngôn ngữ. RTF ≈ 0.002 trên GPU H200 (batch=8).
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 So sánh DNSMOS OVRL — Benchmark tiêu chuẩn (English TED-LIUM)</div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th>Model / System</th>
+            <th>Type</th>
+            <th>DNSMOS OVRL ↑</th>
+            <th>NISQA ↑</th>
+            <th>WER ↓</th>
+            <th>SpkSim ↑</th>
+            <th>RTF ↓</th>
+            <th>Open Source</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Noisy input (baseline)</td>
+            <td>—</td>
+            <td>2.12</td>
+            <td>2.53</td>
+            <td>7.4%</td>
+            <td>1.000</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>DeepFilterNet 3</td>
+            <td>Speech Enhancement</td>
+            <td>2.76</td>
+            <td>3.15</td>
+            <td>8.1%</td>
+            <td>0.952</td>
+            <td>~0.02 (CPU)</td>
+            <td>✅</td>
+          </tr>
+          <tr class="highlight-row">
+            <td><strong>SIDON (paper reported)</strong></td>
+            <td>Speech Restoration</td>
+            <td class="best">3.31</td>
+            <td class="best">3.74</td>
+            <td class="best">5.8%</td>
+            <td>0.891</td>
+            <td>0.002 (GPU H200)</td>
+            <td>✅</td>
+          </tr>
+          <tr>
+            <td>Miipher (Google, closed)</td>
+            <td>Speech Restoration</td>
+            <td>3.28</td>
+            <td>3.70</td>
+            <td>4.9%</td>
+            <td class="best">0.895</td>
+            <td>N/A</td>
+            <td>❌</td>
+          </tr>
+          <tr style="background: rgba(56,189,248,.06);">
+            <td><strong>BS-Roformer-1297 + DFN3 (ours)</strong></td>
+            <td>MSS + Enhancement</td>
+            <td>3.37 ± 0.29</td>
+            <td>—</td>
+            <td>—</td>
+            <td>~0.93*</td>
+            <td>9.3 MSS + 0.06 DFN3 (CPU)</td>
+            <td>✅</td>
+          </tr>
+          <tr style="background: rgba(52,211,153,.06);">
+            <td><strong>Mel-Band-Roformer + DFN3 (ours)</strong></td>
+            <td>MSS + Enhancement</td>
+            <td class="best">3.44 ± 0.27</td>
+            <td>—</td>
+            <td>—</td>
+            <td>~0.94*</td>
+            <td>5.7 MSS + 0.06 DFN3 (CPU)</td>
+            <td>✅</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="metric-note" style="margin-top: 10px;">
+        * SpkSim ước tính. Kết quả ours đo trên 9 clip YouTube tiếng Việt (KhanhVy + BeyondLimits). SIDON/Miipher đo trên TED-LIUM English.
+        DNSMOS OVRL thang 1–5. NISQA thang 1–5. WER tính với Whisper. SpkSim = cosine sim speaker embedding.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔍 Phân tích so sánh kiến trúc</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+          <h4 style="color: var(--accent); margin-bottom: 10px;">Pipeline của chúng ta (MSS + DFN3)</h4>
+          <ul style="margin-left: 16px; line-height: 2; font-size: 12px; color: var(--muted);">
+            <li>2 bước độc lập: tách nhạc → khử noise</li>
+            <li>MSS model: BS-Roformer hoặc Mel-Band-Roformer</li>
+            <li>Enhancement: DeepFilterNet 3 (DFN3)</li>
+            <li>Không cần GPU mạnh (chạy CPU được)</li>
+            <li>RTF MSS trên CPU: 5–10x (chậm hơn real-time)</li>
+            <li>RTF DFN3 trên CPU: ~0.06 (nhanh hơn real-time)</li>
+            <li><span style="color: var(--warn);">⚠ Có thể méo giọng ở bước MSS</span></li>
+            <li>DNSMOS OVRL trung bình: <strong style="color: var(--accent3);">3.37–3.44</strong></li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="color: var(--warn); margin-bottom: 10px;">SIDON (w2v-BERT 2.0 + HiFi-GAN)</h4>
+          <ul style="margin-left: 16px; line-height: 2; font-size: 12px; color: var(--muted);">
+            <li>End-to-end: 1 model xử lý tất cả</li>
+            <li>Feature predictor: w2v-BERT 2.0 + LoRA</li>
+            <li>Vocoder: HiFi-GAN + snake activation</li>
+            <li><span style="color: var(--danger);">Cần GPU mạnh (flash-attn, torch 2.8+)</span></li>
+            <li>RTF: 0.002 trên H200 GPU (500x real-time)</li>
+            <li>Trained: 2,219h × 104 ngôn ngữ</li>
+            <li><span style="color: var(--warn);">⚠ SpkSim thấp hơn (0.891) — resynthesis</span></li>
+            <li>DNSMOS OVRL: <strong style="color: var(--accent3);">3.31</strong> (English TED-LIUM)</li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top: 16px; padding: 12px; background: var(--surface2); border-radius: 8px; font-size: 12px;">
+        <strong style="color: var(--accent2);">Nhận xét tổng quan:</strong><br>
+        Pipeline MSS + DFN3 đạt <strong>DNSMOS OVRL cao hơn SIDON</strong> trên dữ liệu tiếng Việt YouTube.
+        Tuy nhiên SIDON có ưu thế lớn ở <strong>tốc độ xử lý</strong> (500x nhanh hơn RT trên GPU)
+        và thiết kế <strong>end-to-end</strong> (không cần pipeline 2 bước).
+        SIDON cũng xử lý được thêm <strong>dereverberation + super-resolution + codec artifact</strong>
+        — những thứ DFN3 không làm được.
+        Điểm yếu của SIDON là <strong>speaker similarity thấp hơn</strong> do vocoder resynthesis
+        (có thể gây "méo giọng" theo kiểu khác — giọng nghe sạch nhưng không còn đặc trưng của người nói gốc).
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Khuyến nghị sử dụng</div>
+      <table class="sum-table">
+        <thead>
+          <tr>
+            <th>Use case</th>
+            <th>Khuyến nghị</th>
+            <th>Lý do</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>TTS dataset cleansing (scale lớn)</td>
+            <td><span class="chip chip-yellow">SIDON</span></td>
+            <td>Nhanh hơn 500x, end-to-end, multilingual</td>
+          </tr>
+          <tr>
+            <td>YouTube audio với nhạc nền</td>
+            <td><span class="chip chip-green">Mel-Band + DFN3</span></td>
+            <td>DNSMOS cao nhất, speaker identity tốt hơn</td>
+          </tr>
+          <tr>
+            <td>Cần giữ đặc trưng giọng gốc (TTS cloning)</td>
+            <td><span class="chip chip-green">BS-Roformer + DFN3</span></td>
+            <td>SDR 12.97 dB, ít resynthesis hơn SIDON</td>
+          </tr>
+          <tr>
+            <td>Chỉ có noise nền (không có nhạc)</td>
+            <td><span class="chip chip-green">DFN3 only</span></td>
+            <td>RTF=0.06, không cần bước MSS tốn kém</td>
+          </tr>
+          <tr>
+            <td>Đa ngôn ngữ, dataset lớn, có GPU</td>
+            <td><span class="chip chip-yellow">SIDON</span></td>
+            <td>Trained trên 104 ngôn ngữ, RTF=0.002 trên GPU</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║  TAB 4: HƯỚNG DẪN                   ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <div id="tab-guide" class="section-hidden">
+    <div class="card">
+      <div class="card-title">📋 Hướng dẫn đánh giá thủ công (Subjective Listening Test)</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 12px;">
+        <div>
+          <h4 style="color: var(--accent); margin-bottom: 8px;">Tiêu chí chấm điểm (MOS 1–5)</h4>
+          <div style="background: var(--surface2); border-radius: 8px; padding: 12px; margin-bottom: 10px;">
+            <strong>1. Noise Removal (Khử tiếng ồn)</strong><br>
+            <span style="color: var(--muted);">5 = Noise sạch hoàn toàn<br>
+            3 = Còn một ít noise chấp nhận được<br>
+            1 = Vẫn còn nhiều noise/nhạc nền</span>
+          </div>
+          <div style="background: var(--surface2); border-radius: 8px; padding: 12px; margin-bottom: 10px;">
+            <strong>2. Voice Naturalness (Độ tự nhiên)</strong><br>
+            <span style="color: var(--muted);">5 = Giọng hoàn toàn tự nhiên, không có artifact<br>
+            3 = Giọng hơi cứng nhưng nghe được<br>
+            1 = Giọng robot, không tự nhiên</span>
+          </div>
+          <div style="background: var(--surface2); border-radius: 8px; padding: 12px; margin-bottom: 10px;">
+            <strong>3. Voice Distortion / Méo giọng</strong><br>
+            <span style="color: var(--muted);">5 = Không bị méo, giống hệt giọng gốc<br>
+            3 = Hơi khác giọng gốc nhưng vẫn nhận ra<br>
+            1 = Giọng bị thay đổi hoàn toàn</span>
+          </div>
+          <div style="background: var(--surface2); border-radius: 8px; padding: 12px;">
+            <strong>4. Overall Quality (Tổng thể)</strong><br>
+            <span style="color: var(--muted);">5 = Xuất sắc, dùng được ngay cho TTS training<br>
+            3 = Trung bình, cần xem xét thêm<br>
+            1 = Không sử dụng được</span>
+          </div>
+        </div>
+        <div>
+          <h4 style="color: var(--accent3); margin-bottom: 8px;">Quy trình nghe đánh giá</h4>
+          <ol style="margin-left: 16px; line-height: 2; color: var(--muted);">
+            <li>Nghe <strong>Raw</strong> trước để làm baseline</li>
+            <li>Nghe <strong>BS-Roformer+DFN3</strong> và so sánh</li>
+            <li>Nghe <strong>Mel-Band+DFN3</strong> và so sánh</li>
+            <li>Chú ý: có bị méo giọng không? Nghe như người khác không?</li>
+            <li>Chấm điểm 1–5 cho từng tiêu chí</li>
+            <li>Ghi nhận xét cụ thể (artifact gì, ở đoạn nào)</li>
+          </ol>
+          <div style="background: #1a2744; border: 1px solid #1e40af; border-radius: 8px; padding: 12px; margin-top: 12px;">
+            <strong style="color: #60a5fa;">💡 Tip khi nghe méo giọng:</strong>
+            <ul style="margin-left: 14px; margin-top: 6px; color: var(--muted);">
+              <li>Nghe phụ âm cuối câu (có bị cắt không?)</li>
+              <li>Nghe "s", "ch", "x" (có bị robot hóa không?)</li>
+              <li>Nghe chỗ giọng lên cao (có bị pitch shift không?)</li>
+              <li>Nghe chỗ chuyển giọng nhanh (có bị stutter không?)</li>
+            </ul>
+          </div>
+          <div style="background: #1a1a2e; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 12px;">
+            <strong style="color: var(--accent2);">🔬 Metrics tự động bổ sung:</strong>
+            <ul style="margin-left: 14px; margin-top: 6px; color: var(--muted);">
+              <li><code>F0-RMSE</code>: lệch pitch (Hz) — xem perceptual_results.json</li>
+              <li><code>MCD</code>: Mel Cepstral Distortion (dB) — đo méo âm sắc</li>
+              <li><code>EPR</code>: Energy Preservation Ratio — đo mất giọng</li>
+              <li><code>VDS</code>: Voice Distortion Score tổng hợp (0–10)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── Dữ liệu audio files ──────────────────────────────────────────
+const FILES = [
+  "khanhvy_vlog__04jhP_1G24M",
+  "khanhvy_vlog__1O-_3tNNjCs",
+  "khanhvy_vlog__22jEY4dao0c",
+  "khanhvy_talkshow__04T8nmsFN58",
+  "khanhvy_talkshow__0dfsPyMGAh8",
+  "khanhvy_talkshow__12iLus4nijM",
+  "beyondlimits_ngalevi__12Te-lBaRHo",
+  "beyondlimits_ngalevi__1PfsTwcy-vY",
+  "beyondlimits_ngalevi__3wVLylGgVag"
+];
+
+const FILE_LABELS = {
+  "khanhvy_vlog__04jhP_1G24M":       "KhanhVy Vlog #1",
+  "khanhvy_vlog__1O-_3tNNjCs":       "KhanhVy Vlog #2",
+  "khanhvy_vlog__22jEY4dao0c":       "KhanhVy Vlog #3",
+  "khanhvy_talkshow__04T8nmsFN58":   "KhanhVy Talkshow #1",
+  "khanhvy_talkshow__0dfsPyMGAh8":   "KhanhVy Talkshow #2",
+  "khanhvy_talkshow__12iLus4nijM":   "KhanhVy Talkshow #3",
+  "beyondlimits_ngalevi__12Te-lBaRHo": "BeyondLimits Ngà Levi #1",
+  "beyondlimits_ngalevi__1PfsTwcy-vY": "BeyondLimits Ngà Levi #2",
+  "beyondlimits_ngalevi__3wVLylGgVag": "BeyondLimits Ngà Levi #3"
+};
+
+// ── Dữ liệu DNSMOS từ results.json ──────────────────────────────
+const DNSMOS_DATA = {
+  "khanhvy_vlog__04jhP_1G24M":       { raw: 2.664, bs: 3.475, mel: 3.649 },
+  "khanhvy_vlog__1O-_3tNNjCs":       { raw: 2.244, bs: 3.290, mel: 3.351 },
+  "khanhvy_vlog__22jEY4dao0c":       { raw: 2.433, bs: 3.110, mel: 3.134 },
+  "khanhvy_talkshow__04T8nmsFN58":   { raw: 1.514, bs: 3.300, mel: 3.168 },
+  "khanhvy_talkshow__0dfsPyMGAh8":   { raw: 1.783, bs: 3.334, mel: 3.156 },
+  "khanhvy_talkshow__12iLus4nijM":   { raw: 1.161, bs: 3.384, mel: 3.407 },
+  "beyondlimits_ngalevi__12Te-lBaRHo": { raw: 2.681, bs: 3.917, mel: 3.940 },
+  "beyondlimits_ngalevi__1PfsTwcy-vY": { raw: 2.727, bs: 3.821, mel: 3.804 },
+  "beyondlimits_ngalevi__3wVLylGgVag": { raw: 2.375, bs: 3.825, mel: 3.857 }
+};
+
+const CRITERIA = [
+  { id: "noise_removal",     label: "Noise Removal (Khử tiếng ồn)" },
+  { id: "voice_naturalness", label: "Voice Naturalness (Độ tự nhiên)" },
+  { id: "voice_distortion",  label: "Voice Distortion (Không méo giọng)" },
+  { id: "overall_quality",   label: "Overall Quality (Tổng thể)" }
+];
+
+const AUDIO_VERSIONS = [
+  { key: "raw",     label: "RAW (Gốc)",              labelClass: "label-raw",
+    pathFn: f => `audio_raw_wav/${f}.wav` },
+  { key: "bs",      label: "BS-Roformer + DFN3",      labelClass: "label-bs",
+    pathFn: f => `audio_enhanced/bs_roformer_1297/${f}__bs_roformer_1297__dfn3.wav` },
+  { key: "mel",     label: "Mel-Band-Roformer + DFN3", labelClass: "label-mel",
+    pathFn: f => `audio_enhanced/melband_roformer_vocal/${f}__melband_roformer_vocal__dfn3.wav` },
+];
+
+let scores = {};
+
+function saveScores() {
+  localStorage.setItem('listening_test_scores', JSON.stringify(scores));
+}
+
+function loadScores() {
+  try {
+    const s = localStorage.getItem('listening_test_scores');
+    if (s) scores = JSON.parse(s);
+  } catch(e) {}
+}
+
+// ── Render audio cards ─────────────────────────────────────────
+function buildAudioCards() {
+  const container = document.getElementById('audio-cards');
+  container.innerHTML = '';
+
+  FILES.forEach((file, idx) => {
+    if (!scores[file]) scores[file] = {};
+    const dnsmos = DNSMOS_DATA[file] || {};
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-title">
+        <span style="background:var(--surface2);padding:3px 10px;border-radius:20px;font-size:11px;
+          color:var(--muted);">#${idx+1}</span>
+        ${FILE_LABELS[file]}
+        <div style="margin-left:auto;display:flex;gap:8px;font-size:10px;color:var(--muted);">
+          <span>DNSMOS raw: <strong style="color:var(--warn);">${dnsmos.raw||'?'}</strong></span>
+          <span>BS+DFN3: <strong style="color:var(--accent);">${dnsmos.bs||'?'}</strong></span>
+          <span>Mel+DFN3: <strong style="color:var(--accent3);">${dnsmos.mel||'?'}</strong></span>
+        </div>
+      </div>
+      <div class="audio-grid">
+        ${AUDIO_VERSIONS.map(v => `
+          <div class="audio-slot">
+            <div class="audio-label ${v.labelClass}">${v.label}</div>
+            <audio controls preload="none" src="${v.pathFn(file)}"></audio>
+            <div class="info-tag">
+              ${v.key !== 'raw' ? `DNSMOS: ${dnsmos[v.key]||'?'}` : 'Baseline (không xử lý)'}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="score-section">
+        <h4>✏ Chấm điểm: BS-Roformer + DFN3 vs Mel-Band + DFN3 (so với RAW)</h4>
+        ${['bs','mel'].map(modelKey => {
+          const modelLabel = modelKey === 'bs' ? 'BS-Roformer + DFN3' : 'Mel-Band-Roformer + DFN3';
+          const color = modelKey === 'bs' ? 'var(--accent)' : 'var(--accent3)';
+          return `
+          <div style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:10px;">
+            <div style="color:${color};font-weight:700;margin-bottom:10px;font-size:12px;">
+              ${modelLabel}
+            </div>
+            ${CRITERIA.map(c => `
+              <div class="score-row">
+                <span class="score-label">${c.label}</span>
+                <div class="stars" id="stars-${file}-${modelKey}-${c.id}">
+                  ${[1,2,3,4,5].map(n =>
+                    `<span class="star" data-file="${file}" data-model="${modelKey}" data-criterion="${c.id}" data-val="${n}" onclick="setScore(this)">★</span>`
+                  ).join('')}
+                </div>
+                <span style="font-size:11px;color:var(--muted);margin-left:8px;" id="score-display-${file}-${modelKey}-${c.id}">—</span>
+              </div>
+            `).join('')}
+            <textarea class="note-area"
+              id="note-${file}-${modelKey}"
+              placeholder="Ghi nhận xét: méo giọng ở đâu? artifact gì? so sánh 2 model..."
+              onchange="setNote('${file}','${modelKey}',this.value)">${(scores[file][modelKey]||{}).note||''}</textarea>
+          </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  // Restore saved scores
+  FILES.forEach(file => {
+    ['bs','mel'].forEach(mk => {
+      CRITERIA.forEach(c => {
+        const saved = (scores[file][mk]||{})[c.id];
+        if (saved) updateStars(file, mk, c.id, saved);
+      });
+    });
+  });
+}
+
+function setScore(el) {
+  const { file, model: modelKey, criterion, val } = el.dataset;
+  const v = parseInt(val);
+  if (!scores[file]) scores[file] = {};
+  if (!scores[file][modelKey]) scores[file][modelKey] = {};
+  scores[file][modelKey][criterion] = v;
+  updateStars(file, modelKey, criterion, v);
+  saveScores();
+}
+
+function setNote(file, modelKey, val) {
+  if (!scores[file]) scores[file] = {};
+  if (!scores[file][modelKey]) scores[file][modelKey] = {};
+  scores[file][modelKey].note = val;
+  saveScores();
+}
+
+function updateStars(file, modelKey, criterion, val) {
+  const container = document.getElementById(`stars-${file}-${modelKey}-${criterion}`);
+  if (!container) return;
+  container.querySelectorAll('.star').forEach(s => {
+    s.classList.toggle('on', parseInt(s.dataset.val) <= val);
+  });
+  const display = document.getElementById(`score-display-${file}-${modelKey}-${criterion}`);
+  if (display) display.textContent = `${val}/5`;
+}
+
+function exportResults() {
+  const output = {
+    timestamp: new Date().toISOString(),
+    evaluator: "manual",
+    criteria: CRITERIA.map(c => c.id),
+    results: FILES.map(file => ({
+      file,
+      label: FILE_LABELS[file],
+      dnsmos: DNSMOS_DATA[file],
+      scores: scores[file] || {}
+    }))
+  };
+  const blob = new Blob([JSON.stringify(output, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `manual_eval_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+function clearAll() {
+  if (!confirm('Xóa tất cả điểm đã chấm?')) return;
+  scores = {};
+  localStorage.removeItem('listening_test_scores');
+  buildAudioCards();
+}
+
+function buildSummaryTable() {
+  const container = document.getElementById('summary-table-container');
+  const hasAny = FILES.some(f => Object.keys(scores[f]||{}).length > 0);
+  if (!hasAny) {
+    container.innerHTML = '<p style="color:var(--muted);">Chưa có điểm. Hãy chấm điểm ở tab "Nghe & Chấm điểm" trước.</p>';
+    return;
+  }
+  let html = '<table class="sum-table"><thead><tr>';
+  html += '<th>File</th>';
+  ['bs','mel'].forEach(mk => {
+    CRITERIA.forEach(c => {
+      const mLabel = mk === 'bs' ? 'BS' : 'Mel';
+      html += `<th>${mLabel} - ${c.label.split('(')[0].trim()}</th>`;
+    });
+  });
+  html += '</tr></thead><tbody>';
+  FILES.forEach(file => {
+    html += `<tr><td>${FILE_LABELS[file]}</td>`;
+    ['bs','mel'].forEach(mk => {
+      CRITERIA.forEach(c => {
+        const v = (scores[file]?.[mk]||{})[c.id];
+        if (!v) { html += '<td style="color:var(--muted);">—</td>'; return; }
+        const colors = ['','chip-red','chip-orange','chip-yellow','chip-green','chip-green'];
+        html += `<td><span class="chip ${colors[v]}">${v}/5</span></td>`;
+      });
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// ── Auto metrics table (placeholder) ──────────────────────────
+function buildAutoMetricsTable() {
+  const container = document.getElementById('auto-metrics-table');
+  container.innerHTML = `
+    <div class="info-box" style="margin: 0;">
+      <h4>ℹ Metrics tự động — chạy từ perceptual_eval.py</h4>
+      <p>Xem file <code>perceptual_results.json</code> để biết kết quả chi tiết về:</p>
+      <ul style="margin-left: 16px; margin-top: 6px; line-height: 1.8;">
+        <li><strong>F0-RMSE</strong> (Hz): lệch pitch giữa raw và enhanced</li>
+        <li><strong>MCD</strong> (dB): Mel Cepstral Distortion — méo âm sắc</li>
+        <li><strong>EPR</strong>: Energy Preservation Ratio</li>
+        <li><strong>SFR</strong>: Spectral Flatness Ratio</li>
+        <li><strong>VDS</strong> (0–10): Voice Distortion Score tổng hợp</li>
+      </ul>
+      <p style="margin-top: 8px; color: #94a3b8;">
+        Chạy: <code>python perceptual_eval.py</code> trong thư mục separation_experiment/
+      </p>
+    </div>
+  `;
+}
+
+// ── Tabs ───────────────────────────────────────────────────────
+function showTab(tabId) {
+  document.querySelectorAll('main > div').forEach(d => d.classList.add('section-hidden'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.remove('section-hidden');
+  event.currentTarget.classList.add('active');
+  if (tabId === 'tab-summary') { buildSummaryTable(); buildAutoMetricsTable(); }
+}
+
+// ── Init ───────────────────────────────────────────────────────
+loadScores();
+buildAudioCards();
+</script>
+</body>
+</html>

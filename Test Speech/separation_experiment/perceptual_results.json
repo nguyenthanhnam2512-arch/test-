@@ -1,0 +1,403 @@
+[
+  {
+    "file": "beyondlimits_ngalevi__12Te-lBaRHo",
+    "models": {
+      "bs_roformer_1297": {
+        "model_key": "bs_roformer_1297",
+        "model_label": "BS-Roformer-Viperx-1297 + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 0.52,
+        "vuv_ratio_ref": 0.65,
+        "vuv_shift": 0.001,
+        "mcd_dB": 14.463,
+        "epr": 0.6276,
+        "sfr": 0.94,
+        "vds": 1.1,
+        "verdict": "✅ Rất ít méo giọng — phù hợp production",
+        "issues": [
+          "Mất một ít năng lượng (EPR=0.63)"
+        ],
+        "good_points": [
+          "Pitch ổn định (0.5 Hz RMSE)",
+          "MCD thấp (14.5) → DFN3 giữ âm sắc tốt"
+        ]
+      },
+      "melband_roformer_vocal": {
+        "model_key": "melband_roformer_vocal",
+        "model_label": "Mel-Band-Roformer + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 0.46,
+        "vuv_ratio_ref": 0.66,
+        "vuv_shift": 0.005,
+        "mcd_dB": 13.108,
+        "epr": 0.6347,
+        "sfr": 0.8889,
+        "vds": 1.07,
+        "verdict": "✅ Rất ít méo giọng — phù hợp production",
+        "issues": [
+          "Mất một ít năng lượng (EPR=0.63)"
+        ],
+        "good_points": [
+          "Pitch ổn định (0.5 Hz RMSE)",
+          "MCD thấp (13.1) → DFN3 giữ âm sắc tốt"
+        ]
+      }
+    }
+  },
+  {
+    "file": "beyondlimits_ngalevi__1PfsTwcy-vY",
+    "models": {
+      "bs_roformer_1297": {
+        "model_key": "bs_roformer_1297",
+        "model_label": "BS-Roformer-Viperx-1297 + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 2.14,
+        "vuv_ratio_ref": 0.688,
+        "vuv_shift": 0.004,
+        "mcd_dB": 26.422,
+        "epr": 0.812,
+        "sfr": 0.9267,
+        "vds": 1.05,
+        "verdict": "✅ Rất ít méo giọng — phù hợp production",
+        "issues": [],
+        "good_points": [
+          "Pitch ổn định (2.1 Hz RMSE)",
+          "MCD thấp (26.4) → DFN3 giữ âm sắc tốt",
+          "Năng lượng giọng được giữ tốt (EPR=0.81)"
+        ]
+      },
+      "melband_roformer_vocal": {
+        "model_key": "melband_roformer_vocal",
+        "model_label": "Mel-Band-Roformer + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 2.72,
+        "vuv_ratio_ref": 0.683,
+        "vuv_shift": 0.003,
+        "mcd_dB": 13.923,
+        "epr": 0.8112,
+        "sfr": 0.9428,
+        "vds": 0.7,
+        "verdict": "✅ Rất ít méo giọng — phù hợp production",
+        "issues": [],
+        "good_points": [
+          "Pitch ổn định (2.7 Hz RMSE)",
+          "MCD thấp (13.9) → DFN3 giữ âm sắc tốt",
+          "Năng lượng giọng được giữ tốt (EPR=0.81)"
+        ]
+      }
+    }
+  },
+  {
+    "file": "beyondlimits_ngalevi__3wVLylGgVag",
+    "models": {
+      "bs_roformer_1297": {
+        "model_key": "bs_roformer_1297",
+        "model_label": "BS-Roformer-Viperx-1297 + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 2.89,
+        "vuv_ratio_ref": 0.655,
+        "vuv_shift": 0.007,
+        "mcd_dB": 21.511,
+        "epr": 0.778,
+        "sfr": 0.9526,
+        "vds": 0.9,
+        "verdict": "✅ Rất ít méo giọng — phù hợp production",
+        "issues": [],
+        "good_points": [
+          "Pitch ổn định (2.9 Hz RMSE)",
+          "MCD thấp (21.5) → DFN3 giữ âm sắc tốt",
+          "Năng lượng giọng được giữ tốt (EPR=0.78)"
+        ]
+      },
+      "melband_roformer_vocal": {
+        "model_key": "melband_roformer_vocal",
+        "model_label": "Mel-Band-Roformer + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 0.31,
+        "vuv_ratio_ref": 0.634,
+        "vuv_shift": 0.001,
+        "mcd_dB": 14.81,
+        "epr": 0.7785,
+        "sfr": 0.932,
+        "vds": 0.65,
+        "verdict": "✅ Rất ít méo giọng — phù hợp production",
+        "issues": [],
+        "good_points": [
+          "Pitch ổn định (0.3 Hz RMSE)",
+          "MCD thấp (14.8) → DFN3 giữ âm sắc tốt",
+          "Năng lượng giọng được giữ tốt (EPR=0.78)"
+        ]
+      }
+    }
+  },
+  {
+    "file": "khanhvy_talkshow__04T8nmsFN58",
+    "models": {
+      "bs_roformer_1297": {
+        "model_key": "bs_roformer_1297",
+        "model_label": "BS-Roformer-Viperx-1297 + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 6.94,
+        "vuv_ratio_ref": 0.84,
+        "vuv_shift": 0.014,
+        "mcd_dB": 140.094,
+        "epr": 0.2979,
+        "sfr": 0.5204,
+        "vds": 5.42,
+        "verdict": "🟠 Méo giọng trung bình — cần kiểm tra thủ công",
+        "issues": [
+          "MCD cao (140.1) → DFN3 thay đổi phổ nhiều (heavy background)",
+          "Mất nhiều năng lượng giọng (EPR=0.30)"
+        ],
+        "good_points": [
+          "Pitch ổn định (6.9 Hz RMSE)"
+        ]
+      },
+      "melband_roformer_vocal": {
+        "model_key": "melband_roformer_vocal",
+        "model_label": "Mel-Band-Roformer + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 8.6,
+        "vuv_ratio_ref": 0.854,
+        "vuv_shift": 0.005,
+        "mcd_dB": 114.594,
+        "epr": 0.3343,
+        "sfr": 0.6718,
+        "vds": 5.42,
+        "verdict": "🟠 Méo giọng trung bình — cần kiểm tra thủ công",
+        "issues": [
+          "MCD cao (114.6) → DFN3 thay đổi phổ nhiều (heavy background)",
+          "Mất nhiều năng lượng giọng (EPR=0.33)"
+        ],
+        "good_points": [
+          "Pitch ổn định (8.6 Hz RMSE)"
+        ]
+      }
+    }
+  },
+  {
+    "file": "khanhvy_talkshow__0dfsPyMGAh8",
+    "models": {
+      "bs_roformer_1297": {
+        "model_key": "bs_roformer_1297",
+        "model_label": "BS-Roformer-Viperx-1297 + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 12.84,
+        "vuv_ratio_ref": 0.697,
+        "vuv_shift": 0.017,
+        "mcd_dB": 73.653,
+        "epr": 0.616,
+        "sfr": 0.8818,
+        "vds": 4.87,
+        "verdict": "🟠 Méo giọng trung bình — cần kiểm tra thủ công",
+        "issues": [
+          "MCD cao (73.7) → DFN3 thay đổi phổ nhiều (heavy background)",
+          "Mất một ít năng lượng (EPR=0.62)"
+        ],
+        "good_points": [
+          "Pitch ổn định (12.8 Hz RMSE)"
+        ]
+      },
+      "melband_roformer_vocal": {
+        "model_key": "melband_roformer_vocal",
+        "model_label": "Mel-Band-Roformer + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 5.31,
+        "vuv_ratio_ref": 0.69,
+        "vuv_shift": 0.012,
+        "mcd_dB": 31.456,
+        "epr": 0.6338,
+        "sfr": 0.8589,
+        "vds": 2.05,
+        "verdict": "✅ Rất ít méo giọng — phù hợp production",
+        "issues": [
+          "MCD trung bình (31.5) → DFN3 hơi thay đổi âm sắc",
+          "Mất một ít năng lượng (EPR=0.63)"
+        ],
+        "good_points": [
+          "Pitch ổn định (5.3 Hz RMSE)"
+        ]
+      }
+    }
+  },
+  {
+    "file": "khanhvy_talkshow__12iLus4nijM",
+    "models": {
+      "bs_roformer_1297": {
+        "model_key": "bs_roformer_1297",
+        "model_label": "BS-Roformer-Viperx-1297 + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 3.76,
+        "vuv_ratio_ref": 0.768,
+        "vuv_shift": 0.019,
+        "mcd_dB": 73.889,
+        "epr": 0.3639,
+        "sfr": 0.6947,
+        "vds": 5.04,
+        "verdict": "🟠 Méo giọng trung bình — cần kiểm tra thủ công",
+        "issues": [
+          "MCD cao (73.9) → DFN3 thay đổi phổ nhiều (heavy background)",
+          "Mất nhiều năng lượng giọng (EPR=0.36)"
+        ],
+        "good_points": [
+          "Pitch ổn định (3.8 Hz RMSE)"
+        ]
+      },
+      "melband_roformer_vocal": {
+        "model_key": "melband_roformer_vocal",
+        "model_label": "Mel-Band-Roformer + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 3.27,
+        "vuv_ratio_ref": 0.743,
+        "vuv_shift": 0.002,
+        "mcd_dB": 77.732,
+        "epr": 0.3463,
+        "sfr": 1.0003,
+        "vds": 5.06,
+        "verdict": "🟠 Méo giọng trung bình — cần kiểm tra thủ công",
+        "issues": [
+          "MCD cao (77.7) → DFN3 thay đổi phổ nhiều (heavy background)",
+          "Mất nhiều năng lượng giọng (EPR=0.35)"
+        ],
+        "good_points": [
+          "Pitch ổn định (3.3 Hz RMSE)"
+        ]
+      }
+    }
+  },
+  {
+    "file": "khanhvy_vlog__04jhP_1G24M",
+    "models": {
+      "bs_roformer_1297": {
+        "model_key": "bs_roformer_1297",
+        "model_label": "BS-Roformer-Viperx-1297 + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 2.89,
+        "vuv_ratio_ref": 0.84,
+        "vuv_shift": 0.008,
+        "mcd_dB": 32.418,
+        "epr": 0.7009,
+        "sfr": 0.6588,
+        "vds": 1.77,
+        "verdict": "✅ Rất ít méo giọng — phù hợp production",
+        "issues": [
+          "MCD trung bình (32.4) → DFN3 hơi thay đổi âm sắc"
+        ],
+        "good_points": [
+          "Pitch ổn định (2.9 Hz RMSE)",
+          "Năng lượng giọng được giữ tốt (EPR=0.70)"
+        ]
+      },
+      "melband_roformer_vocal": {
+        "model_key": "melband_roformer_vocal",
+        "model_label": "Mel-Band-Roformer + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 6.93,
+        "vuv_ratio_ref": 0.836,
+        "vuv_shift": 0.001,
+        "mcd_dB": 62.597,
+        "epr": 0.6515,
+        "sfr": 0.7749,
+        "vds": 3.97,
+        "verdict": "🟡 Méo giọng nhẹ — chấp nhận được",
+        "issues": [
+          "MCD trung bình (62.6) → DFN3 hơi thay đổi âm sắc",
+          "Mất một ít năng lượng (EPR=0.65)"
+        ],
+        "good_points": [
+          "Pitch ổn định (6.9 Hz RMSE)"
+        ]
+      }
+    }
+  },
+  {
+    "file": "khanhvy_vlog__1O-_3tNNjCs",
+    "models": {
+      "bs_roformer_1297": {
+        "model_key": "bs_roformer_1297",
+        "model_label": "BS-Roformer-Viperx-1297 + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 3.1,
+        "vuv_ratio_ref": 0.93,
+        "vuv_shift": 0.005,
+        "mcd_dB": 45.858,
+        "epr": 0.6684,
+        "sfr": 1.0107,
+        "vds": 2.7,
+        "verdict": "🟡 Méo giọng nhẹ — chấp nhận được",
+        "issues": [
+          "MCD trung bình (45.9) → DFN3 hơi thay đổi âm sắc",
+          "Mất một ít năng lượng (EPR=0.67)"
+        ],
+        "good_points": [
+          "Pitch ổn định (3.1 Hz RMSE)"
+        ]
+      },
+      "melband_roformer_vocal": {
+        "model_key": "melband_roformer_vocal",
+        "model_label": "Mel-Band-Roformer + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 3.26,
+        "vuv_ratio_ref": 0.928,
+        "vuv_shift": 0.007,
+        "mcd_dB": 56.505,
+        "epr": 0.6651,
+        "sfr": 1.0164,
+        "vds": 3.36,
+        "verdict": "🟡 Méo giọng nhẹ — chấp nhận được",
+        "issues": [
+          "MCD trung bình (56.5) → DFN3 hơi thay đổi âm sắc",
+          "Mất một ít năng lượng (EPR=0.67)"
+        ],
+        "good_points": [
+          "Pitch ổn định (3.3 Hz RMSE)"
+        ]
+      }
+    }
+  },
+  {
+    "file": "khanhvy_vlog__22jEY4dao0c",
+    "models": {
+      "bs_roformer_1297": {
+        "model_key": "bs_roformer_1297",
+        "model_label": "BS-Roformer-Viperx-1297 + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 11.72,
+        "vuv_ratio_ref": 0.849,
+        "vuv_shift": 0.003,
+        "mcd_dB": 59.034,
+        "epr": 0.54,
+        "sfr": 0.8236,
+        "vds": 4.36,
+        "verdict": "🟡 Méo giọng nhẹ — chấp nhận được",
+        "issues": [
+          "MCD trung bình (59.0) → DFN3 hơi thay đổi âm sắc",
+          "Mất một ít năng lượng (EPR=0.54)"
+        ],
+        "good_points": [
+          "Pitch ổn định (11.7 Hz RMSE)"
+        ]
+      },
+      "melband_roformer_vocal": {
+        "model_key": "melband_roformer_vocal",
+        "model_label": "Mel-Band-Roformer + DFN3",
+        "compare_mode": "sep_vs_enh",
+        "f0_rmse_hz": 2.11,
+        "vuv_ratio_ref": 0.833,
+        "vuv_shift": 0.0,
+        "mcd_dB": 58.367,
+        "epr": 0.5353,
+        "sfr": 0.8117,
+        "vds": 3.76,
+        "verdict": "🟡 Méo giọng nhẹ — chấp nhận được",
+        "issues": [
+          "MCD trung bình (58.4) → DFN3 hơi thay đổi âm sắc",
+          "Mất một ít năng lượng (EPR=0.54)"
+        ],
+        "good_points": [
+          "Pitch ổn định (2.1 Hz RMSE)"
+        ]
+      }
+    }
+  }
+]
